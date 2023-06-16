@@ -53,7 +53,6 @@
 
 ## 5. Стиль
 Название - PLANZER
-Логотип: 
 
 
 ## 6. Codestyle
@@ -61,10 +60,10 @@
 - Google Doc Style [ссылка](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)
 - Явные исключения
 
+
 ## 7. Процесс разработки
-1. ✘ Подготовка
+1. ✔ Подготовка
 	- ✔ GitHub repo
-	- ✘ Poetry
 2. ✘ Core
 	- ✘ Классы заглушки. Вся архитектура без логики
 	- ✘  Тесты
