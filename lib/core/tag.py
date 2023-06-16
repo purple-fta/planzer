@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -8,8 +9,8 @@ class Tag:
 
         Params:
             name (str): Tag name
-            decor (Any):  
+            decor (Any): Color or any other information in any type
     """
     name: str
-    decor
+    decor: Any
 
