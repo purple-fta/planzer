@@ -4,22 +4,32 @@ import datetime
 
 
 
-# TODO: DOCSTRING
 class StartEnd(NamedTuple):
+    """
+    A class for specifying values to describe the event.
+    """
     event_start_time: datetime.datetime
     event_end_time: datetime.datetime
 
 class StartDuration(NamedTuple):
+    """
+    A class for specifying values to describe the event.
+    """
     event_start_time: datetime.datetime
     event_duration_time: datetime.timedelta
 
 class EndDuration(NamedTuple):
+    """
+    A class for specifying values to describe the event.
+    """
     event_end_time: datetime.datetime
     event_duration_time: datetime.timedelta
 
 
 class EventOptions:
-    # TODO: DOCSTRING
+    """
+    A class with all the data to describe the location of the event on the timeline
+    """
     def __init__(self, options: StartEnd | StartDuration | EndDuration) -> None:
         if type(options) == StartEnd:
             self.event_start_time = options.event_start_time
@@ -40,6 +50,8 @@ class EventOptions:
 
 
 class Event(EventOptions):
-    # TODO: DOCSTRING
+    """
+    Event class with time and task information
+    """
     def __init__(self, task: Task, options: StartEnd | StartDuration | EndDuration) -> None:
         super().__init__(options)
