@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import time
-from event import Event
+
+from .event import Event
 
 
 @dataclass

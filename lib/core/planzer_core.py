@@ -4,10 +4,10 @@ from typing import Set
 from enum import Enum
 
 
-from event import Event, EventOptions
-from timeline import Timeline
-from task import Task
-from tag import Tag
+from .event import Event, EventOptions
+from .timeline import Timeline
+from .task import Task
+from .tag import Tag
 
 
 class SortedBy(Enum):
