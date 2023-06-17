@@ -1,10 +1,14 @@
 from dataclasses import dataclass
 from datetime import date
+from typing import Set
 from enum import Enum
 
-from event import Event, CreateEventOptions
+
+from event import Event, EventOptions
 from timeline import Timeline
 from task import Task
+from tag import Tag
+
 
 class SortedBy(Enum):
     priority = 0
@@ -12,8 +16,14 @@ class SortedBy(Enum):
 
 
 @dataclass
-class TaskListDisplayOption: #TODO: ДОРОБИТИ
-    pass
+class TaskListDisplayOptions:
+    """
+    Sorting and display options for the task list
+    
+    Attributes:
+        tags (set[Tag]): Tags that tasks in the list should have
+    """
+    tags: Set[Tag]
 
 
 class PlanzerCore:
@@ -25,7 +35,7 @@ class PlanzerCore:
     def __init__(self) -> None:
         pass
 
-    def get_task_list(self, filter: TaskListDisplayOption) -> tuple[Task, ...]:
+    def get_task_list(self, filter: TaskListDisplayOptions) -> tuple[Task, ...]:
         """
         Takes a dataclass and returns a tuple with tasks 
         in the correct order
@@ -58,7 +68,7 @@ class PlanzerCore:
         """
         pass
 
-    def task_to_event(self, task: Task, options: CreateEventOptions) -> Event:
+    def task_to_event(self, task: Task, options: EventOptions) -> Event:
         """Adds a task to the timeline with the specified 
         parameters (time and either duration or end time)
 
