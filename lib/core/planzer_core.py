@@ -3,7 +3,7 @@ from datetime import date
 from enum import Enum
 
 #TODO: Fix typo
-from event import Event, CreateEventOptions
+from event import Event, EventOptions
 from timeline import Timeline
 from task import Task
 
@@ -59,7 +59,7 @@ class PlanzerCore:
         """
         pass
 
-    def task_to_event(self, task: Task, options: CreateEventOptions) -> Event:
+    def task_to_event(self, task: Task, options: EventOptions) -> Event:
         """Adds a task to the timeline with the specified 
         parameters (time and either duration or end time)
 
