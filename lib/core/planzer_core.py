@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import date
 from enum import Enum
 
-#TODO: Fix typo
 from event import Event, EventOptions
 from timeline import Timeline
 from task import Task
