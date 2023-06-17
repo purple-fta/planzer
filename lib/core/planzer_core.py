@@ -12,7 +12,7 @@ class SortedBy(Enum):
 
 
 @dataclass
-class TaskListDisplayOption:
+class TaskListDisplayOption: #TODO: ДОРОБИТИ
     pass
 
 
