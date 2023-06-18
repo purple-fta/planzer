@@ -55,3 +55,20 @@ def test_get_task_list_with_value_error(filter):
 def test_create_TaskListDisplayOptions_with_value_error(tags):
     with pytest.raises(ValueError):
         TaskListDisplayOptions(tags)
+
+
+def test_task_to_event_result_check():
+    task = Task("Task1", Priority.high, [Tag("tag1", (0, 0, 0))], (255, 255, 255), datetime.datetime(2022, 10, 5, 12, 30))
+
+    options = EventOptions(StartEnd(datetime.datetime(2022, 9, 5, 10, 15), datetime.datetime(2022, 9, 5, 12, 00)))
+
+    event = planzer_core.task_to_event(task, options)
+
+    assert event.event_start_time == datetime.datetime(2022, 9, 5, 10, 15)
+    assert event.event_end_time == datetime.datetime(2022, 9, 5, 12, 00)
+    assert event.get_event_duration() ==  datetime.timedelta(hours=1, minutes=45)
+    assert event.task.name == "Task1"
+    assert event.task.priority == Priority.high
+    assert event.task.tags == [Tag("tag1", (0, 0, 0))]
+    assert event.task.decor == (255, 255, 255)
+    assert event.task.deadline == datetime.datetime(2022, 10, 5, 12, 30)
