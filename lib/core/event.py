@@ -1,5 +1,5 @@
 from typing import NamedTuple
-from task import Task
+from .task import Task
 import datetime
 
 

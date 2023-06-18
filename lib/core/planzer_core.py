@@ -1,13 +1,13 @@
 from dataclasses import dataclass
+from typing import Set, Iterable
 from datetime import date
-from typing import Set
 from enum import Enum
 
 
-from event import Event, EventOptions
-from timeline import Timeline
-from task import Task
-from tag import Tag
+from .event import Event, EventOptions
+from .timeline import Timeline
+from .task import Task
+from .tag import Tag
 
 
 class SortedBy(Enum):
@@ -23,7 +23,7 @@ class TaskListDisplayOptions:
     Attributes:
         tags (set[Tag]): Tags that tasks in the list should have
     """
-    tags: Set[Tag]
+    tags: Iterable[Tag]
 
 
 class PlanzerCore:
