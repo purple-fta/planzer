@@ -1,6 +1,6 @@
+from typing import Set, Any, Iterable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Set, Any
 from enum import Enum
 
 from .tag import Tag
@@ -25,6 +25,6 @@ class Task:
     """
     name: str
     priority: Priority
-    tags: Set[Tag]
+    tags: Iterable[Tag]
     decor: Any
     deadline: datetime
