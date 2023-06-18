@@ -15,7 +15,6 @@ def setup_function():
 @pytest.mark.parametrize("filter", ([1, 2, 3],
                                       "123", 123))
 def test_get_task_list_with_type_error(filter):
-    print(filter)
     with pytest.raises(TypeError):
         planzer_core.get_task_list(filter)
 
