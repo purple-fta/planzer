@@ -23,6 +23,6 @@ def test_create_EventOptions_with_value_error(options):
     with pytest.raises(ValueError):
         EventOptions(options)
 
-@pytest.mark.parametrize(("task", "options"), (Task("1", Priority.high, [], 0, datetime.datetime(2023, 10, 5)), EndDuration(datetime.datetime(2024, 11, 6), datetime.timedelta(10))))
-def test_create_Event_with_value_error(task, options):
-    pass
+def test_create_Event_with_value_error():
+    with pytest.raises(ValueError):
+        Event(Task("1", Priority.high, [], 0, datetime.datetime(2023, 10, 5)), EndDuration(datetime.datetime(2024, 11, 6), datetime.timedelta(10)))
