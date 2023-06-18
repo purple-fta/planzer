@@ -1,6 +1,6 @@
 from dataclasses import dataclass
+from typing import Set, Iterable
 from datetime import date
-from typing import Set
 from enum import Enum
 
 
@@ -23,7 +23,7 @@ class TaskListDisplayOptions:
     Attributes:
         tags (set[Tag]): Tags that tasks in the list should have
     """
-    tags: Set[Tag]
+    tags: Iterable[Tag]
 
 
 class PlanzerCore:
