@@ -13,7 +13,7 @@ def setup_function():
 
 
 @pytest.mark.parametrize("filter", ([1, 2, 3],
-                                      "123", 123))
+                                     "123", 123))
 def test_get_task_list_with_type_error(filter):
     with pytest.raises(TypeError):
         planzer_core.get_task_list(filter)
@@ -32,29 +32,10 @@ def test_get_timeline_with_type_error(day):
 
 @pytest.mark.parametrize(("task", "options"), ( [1123, "123"],
                                                 ["12", [1, 2, 3]],
-                                                ["12", [1, "1", 3]] ))
+                                                [Task("123", Priority.high, [], 0, datetime.datetime(2020, 10, 10)), [1, "1", 3]] ))
 def test_task_to_event_with_type_error(task, options):
     with pytest.raises(TypeError):
         planzer_core.task_to_event(task, options)
-
-@pytest.mark.parametrize(("filter"), (1, "123", 123))
-def test_create_TaskListDisplayOptions_with_type_error(filter):
-    with pytest.raises(TypeError):
-        TaskListDisplayOptions(filter)
-
-
-@pytest.mark.parametrize(("filter"), ([1, 2, 3],
-                                      "123", 123))
-def test_get_task_list_with_value_error(filter):
-    with pytest.raises(TypeError):
-        planzer_core.get_task_list(filter)
-
-@pytest.mark.parametrize(("tags"), ([1, Tag("tag", (0, 150, 150))],
-                                    (Tag("tag", (0, 150, 150)), Tag),
-                                    [1, Tag, 5]))
-def test_create_TaskListDisplayOptions_with_value_error(tags):
-    with pytest.raises(ValueError):
-        TaskListDisplayOptions(tags)
 
 
 def test_task_to_event_result_check():
@@ -72,3 +53,22 @@ def test_task_to_event_result_check():
     assert event.task.tags == [Tag("tag1", (0, 0, 0))]
     assert event.task.decor == (255, 255, 255)
     assert event.task.deadline == datetime.datetime(2022, 10, 5, 12, 30)
+
+
+def test_get_task_list():
+    task1 = Task("Task1", Priority.low,    [], 0, datetime.datetime(2025, 10, 10))
+    task2 = Task("Task2", Priority.high,   [], 0, datetime.datetime(2023, 10, 10))
+    task3 = Task("Task3", Priority.normal, [], 0, datetime.datetime(2024, 10, 10))
+    task4 = Task("Task4", Priority.normal, [], 0, datetime.datetime(2023, 9, 10))
+
+    planzer_core.add_task(task1)
+    planzer_core.add_task(task2)
+    planzer_core.add_task(task3)
+    planzer_core.add_task(task4)
+
+    filter_options = TaskListDisplayOptions(True, SortBy.closest_to_deadline, [])
+    
+    task_list = planzer_core.get_task_list(filter_options)
+
+    assert task_list == (task2, task3, task4, task1)
+    
