@@ -19,4 +19,4 @@ class Timeline:
 
     events: set[Event]
     day_start_time: time
-    dat_end_time: time
+    day_end_time: time
