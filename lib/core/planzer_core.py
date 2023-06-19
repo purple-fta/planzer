@@ -10,9 +10,9 @@ from .task import Task
 from .tag import Tag
 
 
-class SortedBy(Enum):
-    priority = 0
+class SortBy(Enum):
     closest_to_deadline = 1
+    sort_by_creation_age = 2 # TODO
 
 
 @dataclass
@@ -21,8 +21,12 @@ class TaskListDisplayOptions:
     Sorting and display options for the task list
     
     Attributes:
+        sort_by_priority (bool):
+        sort_by (SortBy): Sort option
         tags (set[Tag]): Tags that tasks in the list should have
     """
+    sort_by_priority: bool
+    sort_by: SortBy
     tags: Iterable[Tag]
 
 
