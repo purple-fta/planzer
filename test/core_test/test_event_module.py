@@ -9,19 +9,17 @@ def test_create_EventOptions_with_type_error(options):
     with pytest.raises(TypeError):
         EventOptions(options)
 
-@pytest.mark.parametrize(("task", "options"), ((1,    EventOptions(StartEnd(datetime.datetime(2020, 5, 10, 5, 10, 0), datetime.datetime(2020, 6, 10, 5, 10, 0)))),
+@pytest.mark.parametrize(("task", "options"), ((1,                                                                   StartEnd(datetime.datetime(2020, 5, 10, 5, 10, 0), datetime.datetime(2020, 6, 10, 5, 10, 0))),
                                                (Task("123", Priority.high, [], 0, datetime.datetime(2000, 10, 10)),  0),
-                                               (Task, EventOptions(StartEnd(datetime.datetime(2020, 5, 10, 5, 10, 0), datetime.datetime(2020, 6, 10, 5, 10, 0))))))
+                                               (Task,                                                                StartEnd(datetime.datetime(2020, 5, 10, 5, 10, 0), datetime.datetime(2020, 6, 10, 5, 10, 0)))))
 def test_create_Event_with_type_error(task, options):
     with pytest.raises(TypeError):
         Event(task, options)
 
 
-@pytest.mark.parametrize("options", (StartEnd(datetime.datetime(2022, 5, 10),
-                                              datetime.datetime(2020, 5, 10))))
-def test_create_EventOptions_with_value_error(options):
+def test_create_EventOptions_with_value_error():
     with pytest.raises(ValueError):
-        EventOptions(options)
+        EventOptions(StartEnd(datetime.datetime(2022, 5, 10), datetime.datetime(2020, 5, 10)))
 
 def test_create_Event_with_value_error():
     with pytest.raises(ValueError):

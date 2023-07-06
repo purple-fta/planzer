@@ -4,7 +4,7 @@ from datetime import date
 from enum import Enum
 
 
-from .event import Event, EventOptions
+from .event import Event, EventOptions, StartEnd, StartDuration, EndDuration
 from .timeline import Timeline
 from .task import Task
 from .tag import Tag
@@ -50,7 +50,8 @@ class PlanzerCore:
         Returns:
             tuple[Task, ...]: Tuple with tasks in the correct order
         """
-        pass
+        if type(filter) != TaskListDisplayOptions:
+            raise TypeError()
 
     def add_task(self, task: Task) -> None:
         """Accepts an instance of a new task and adds it to the list
@@ -58,7 +59,8 @@ class PlanzerCore:
         Args:
             task (Task): instance of a new task
         """
-        pass
+        if type(task) != Task:
+            raise TypeError()
 
     def get_timeline(self, day: date) -> Timeline:
         """
@@ -70,9 +72,10 @@ class PlanzerCore:
         Returns:
             Timeline: timeline for the specified day
         """
-        pass
+        if type(day) != date:
+            raise TypeError()
 
-    def task_to_event(self, task: Task, options: EventOptions) -> Event:
+    def task_to_event(self, task: Task, options: StartEnd | StartDuration | EndDuration) -> Event:
         """Adds a task to the timeline with the specified 
         parameters (time and either duration or end time)
 
@@ -83,4 +86,9 @@ class PlanzerCore:
         Returns:
             Event: Created event
         """
-        pass
+        if type(task) != Task:
+            raise TypeError()
+        if type(options) != StartEnd and StartDuration and EndDuration:
+            raise TypeError()
+        
+        return Event(task, options)
