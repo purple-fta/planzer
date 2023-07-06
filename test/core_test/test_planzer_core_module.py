@@ -41,7 +41,7 @@ def test_task_to_event_with_type_error(task, options):
 def test_task_to_event_result_check():
     task = Task("Task1", Priority.high, [Tag("tag1", (0, 0, 0))], (255, 255, 255), datetime.datetime(2022, 10, 5, 12, 30))
 
-    options = EventOptions(StartEnd(datetime.datetime(2022, 9, 5, 10, 15), datetime.datetime(2022, 9, 5, 12, 00)))
+    options = StartEnd(datetime.datetime(2022, 9, 5, 10, 15), datetime.datetime(2022, 9, 5, 12, 00))
 
     event = planzer_core.task_to_event(task, options)
 

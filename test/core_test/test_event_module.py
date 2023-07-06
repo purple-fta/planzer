@@ -17,11 +17,9 @@ def test_create_Event_with_type_error(task, options):
         Event(task, options)
 
 
-@pytest.mark.parametrize("options", (StartEnd(datetime.datetime(2022, 5, 10),
-                                              datetime.datetime(2020, 5, 10))))
-def test_create_EventOptions_with_value_error(options):
+def test_create_EventOptions_with_value_error():
     with pytest.raises(ValueError):
-        EventOptions(options)
+        EventOptions(StartEnd(datetime.datetime(2022, 5, 10), datetime.datetime(2020, 5, 10)))
 
 def test_create_Event_with_value_error():
     with pytest.raises(ValueError):
