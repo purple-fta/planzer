@@ -32,18 +32,21 @@ class EventOptions:
     """
     def __init__(self, options: StartEnd | StartDuration | EndDuration) -> None:
         if type(options) == StartEnd:
+            if options.event_start_time > options.event_end_time:
+                raise ValueError("Start time > end time")
             self.event_start_time = options.event_start_time
             self.event_end_time = options.event_end_time
             self.event_duration_time = self.event_end_time - self.event_start_time
-        if type(options) == StartDuration:
+        elif type(options) == StartDuration:
             self.event_start_time = options.event_start_time
             self.event_duration_time = options.event_duration_time
             self.event_end_time = self.event_start_time + self.event_duration_time
-        if type(options) == EndDuration:
+        elif type(options) == EndDuration:
             self.event_end_time = options.event_end_time
             self.event_duration_time = options.event_duration_time
             self.event_start_time = self.event_end_time - self.event_duration_time
-
+        else:
+            raise TypeError("")
 
     def get_event_duration(self) -> datetime.timedelta:
         pass
@@ -55,3 +58,10 @@ class Event(EventOptions):
     """
     def __init__(self, task: Task, options: StartEnd | StartDuration | EndDuration) -> None:
         super().__init__(options)
+        
+        if type(task) != Task:
+            raise TypeError("")
+        if task.deadline < self.event_end_time:
+            raise ValueError()
+        if task.deadline < self.event_start_time:
+            raise ValueError()
