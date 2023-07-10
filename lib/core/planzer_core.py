@@ -37,7 +37,7 @@ class PlanzerCore:
     """
     
     def __init__(self) -> None:
-        pass
+        self.tasks = []
 
     def get_task_list(self, filter: TaskListDisplayOptions) -> tuple[Task, ...]:
         """
@@ -61,6 +61,11 @@ class PlanzerCore:
         """
         if type(task) != Task:
             raise TypeError()
+        
+        tasks_name = [t.name for t in self.tasks]
+        if task.name in tasks_name:
+            self.tasks.append(task)
+
 
     def get_timeline(self, day: date) -> Timeline:
         """
