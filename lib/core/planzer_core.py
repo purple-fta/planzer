@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Set, Iterable
-from datetime import date
+from typing import Set, Iterable, List
+from datetime import date, time
 from enum import Enum
 
 
@@ -37,7 +37,8 @@ class PlanzerCore:
     """
     
     def __init__(self) -> None:
-        self.tasks = []
+        self.tasks: List[Task] = []
+        self.events: List[Event] = []
 
     def get_task_list(self, filter: TaskListDisplayOptions) -> tuple[Task, ...]:
         """
@@ -58,13 +59,18 @@ class PlanzerCore:
 
         Args:
             task (Task): instance of a new task
+        
+        Raises:
+            ValueError: If task with same name already exists
         """
         if type(task) != Task:
             raise TypeError()
         
         tasks_name = [t.name for t in self.tasks]
-        if task.name in tasks_name:
+        if task.name not in tasks_name:
             self.tasks.append(task)
+        else:
+            raise ValueError("A task with the same name already exists")
 
 
     def get_timeline(self, day: date) -> Timeline:
@@ -95,5 +101,9 @@ class PlanzerCore:
             raise TypeError()
         if type(options) != StartEnd and StartDuration and EndDuration:
             raise TypeError()
-        
-        return Event(task, options)
+
+        event = Event(task, options)
+
+        self.events.append(event)
+
+        return event
