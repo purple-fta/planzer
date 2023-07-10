@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Set, Iterable, List
-from datetime import date, time
+from datetime import date, time, datetime
 from enum import Enum
 
 
 from .event import Event, EventOptions, StartEnd, StartDuration, EndDuration
 from .timeline import Timeline
-from .task import Task
+from .task import Task, Priority
 from .tag import Tag
 
 
@@ -27,7 +27,7 @@ class TaskListDisplayOptions:
     """
     sort_by_priority: bool
     sort_by: SortBy
-    tags: Iterable[Tag]
+    tags: Iterable[Tag] #TODO
 
 
 class PlanzerCore:
@@ -53,6 +53,35 @@ class PlanzerCore:
         """
         if type(filter) != TaskListDisplayOptions:
             raise TypeError()
+        
+        result_tasks = []
+
+        if filter.sort_by_priority:
+            high_priority_tasks = []
+            normal_priority_tasks = []
+            low_priority_tasks = []
+
+            for task in self.tasks:
+                if task.priority == Priority.high:
+                    high_priority_tasks.append(task)
+                elif task.priority == Priority.normal:
+                    normal_priority_tasks.append(task)
+                elif task.priority == Priority.low:
+                    low_priority_tasks.append(task)
+
+            if filter.sort_by == SortBy.closest_to_deadline:
+                datetime_now = datetime.now()
+                
+                high_priority_tasks.sort(key=lambda task: datetime_now - task.deadline)
+                normal_priority_tasks.sort(key=lambda task: datetime_now - task.deadline)
+                low_priority_tasks.sort(key=lambda task: datetime_now - task.deadline)
+
+                result_tasks = high_priority_tasks + normal_priority_tasks + low_priority_tasks
+        else:
+            pass
+
+        return tuple(result_tasks)
+
 
     def add_task(self, task: Task) -> None:
         """Accepts an instance of a new task and adds it to the list
