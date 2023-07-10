@@ -49,7 +49,7 @@ class EventOptions:
             raise TypeError("")
 
     def get_event_duration(self) -> datetime.timedelta:
-        pass
+        return self.event_duration_time
 
 
 class Event(EventOptions):
@@ -65,3 +65,5 @@ class Event(EventOptions):
             raise ValueError()
         if task.deadline < self.event_start_time:
             raise ValueError()
+        
+        self.task = task

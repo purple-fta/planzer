@@ -82,10 +82,10 @@ def test_get_timeline_result_check():
     planzer_core.add_task(task3)
     planzer_core.add_task(task4)
 
-    event1 = planzer_core.task_to_event(task1, EventOptions(StartEnd(datetime.datetime(2023, 8, 10, 10, 0), datetime.datetime(2023, 8, 10, 11, 0))))
-    event2 = planzer_core.task_to_event(task2, EventOptions(StartEnd(datetime.datetime(2023, 8, 10, 13, 0), datetime.datetime(2023, 8, 10, 14, 0))))
-    event3 = planzer_core.task_to_event(task3, EventOptions(StartEnd(datetime.datetime(2023, 8, 10, 15, 0), datetime.datetime(2023, 8, 10, 16, 0))))
-    event4 = planzer_core.task_to_event(task4, EventOptions(StartEnd(datetime.datetime(2023, 8, 10, 17, 0), datetime.datetime(2023, 8, 10, 18, 0))))
+    event1 = planzer_core.task_to_event(task1, StartEnd(datetime.datetime(2023, 8, 10, 10, 0), datetime.datetime(2023, 8, 10, 11, 0)))
+    event2 = planzer_core.task_to_event(task2, StartEnd(datetime.datetime(2023, 8, 10, 13, 0), datetime.datetime(2023, 8, 10, 14, 0)))
+    event3 = planzer_core.task_to_event(task3, StartEnd(datetime.datetime(2023, 8, 10, 15, 0), datetime.datetime(2023, 8, 10, 16, 0)))
+    event4 = planzer_core.task_to_event(task4, StartEnd(datetime.datetime(2023, 8, 10, 17, 0), datetime.datetime(2023, 8, 10, 18, 0)))
 
     timeline = planzer_core.get_timeline(datetime.date(2023, 8, 10))
 
