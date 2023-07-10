@@ -85,6 +85,18 @@ class PlanzerCore:
         """
         if type(day) != date:
             raise TypeError()
+        
+        events_in_day = []
+
+        for event in self.events:
+            if event.event_start_time.date() == day:
+                events_in_day.append(event)
+
+        # TODO: Timeline argument from Set to Iterable
+        result_timeline = Timeline(set(events_in_day), time.min, time.max)
+
+        return result_timeline
+
 
     def task_to_event(self, task: Task, options: StartEnd | StartDuration | EndDuration) -> Event:
         """Adds a task to the timeline with the specified 
