@@ -21,7 +21,7 @@ class SaveLoadSystem:
 
         """
 
-    def save(self, *args) -> None:
+    def save(self, args) -> None:
         """
         Сохраняет словарь от to_dict_func с переданными args в JSON файл
 
