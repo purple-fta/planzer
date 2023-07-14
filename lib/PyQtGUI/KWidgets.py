@@ -7,6 +7,7 @@ class KCollapsibleBox(QWidget):
         super().__init__()
 
         self.arrow_button = QToolButton()
+        self.arrow_button.setStyleSheet("QToolButton { border: none; }")
         self.arrow_button.setCheckable(True)
         self.arrow_button.setText(title)
         self.arrow_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
