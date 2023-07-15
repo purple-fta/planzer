@@ -46,6 +46,7 @@ class SaveLoadSystem:
         Args:
             args: Аргументы, что будут переданы в to_dict_func
 
+        # TODO: Нужно переместить комментарии о Raises в описание класса после Args. В конструкторе нужно используя signature из inspect (Документация - https://docs.python.org/3/library/inspect.html#inspect.signature) проверить принимаемые аргументы и в случае чего вызвать исключение InvalidNumberOfArguments
         Raises:
             InvalidNumberOfArguments: если from_dict_func не принимает аргументы
         """
