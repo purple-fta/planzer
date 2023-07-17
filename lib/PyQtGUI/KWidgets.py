@@ -1,3 +1,5 @@
+import typing
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem
 
@@ -21,6 +23,7 @@ class KCollapsibleBox(QWidget):
         self.content_area.setMaximumHeight(0)
         self.content_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.content_area.setFrameStyle(QFrame.Shape.NoFrame)
+        QVBoxLayout(self.content_area)
         
         self.content_layout = QVBoxLayout(self)
         self.content_layout.setSpacing(0)
@@ -58,3 +61,27 @@ class KCollapsibleBox(QWidget):
         content_animation.setDuration(250) # type: ignore
         content_animation.setStartValue(0) # type: ignore
         content_animation.setEndValue(content_height) # type: ignore
+
+    def updateContentAnimation(self):
+        collapsed_height = self.sizeHint().height() - self.content_area.maximumHeight()
+        content_height = self.content_area.layout().sizeHint().height()
+        for i in range(self.toggle_animation.animationCount()):
+            animation = self.toggle_animation.animationAt(i)
+            animation.setDuration(250) # type: ignore
+            animation.setStartValue(collapsed_height) # type: ignore
+            animation.setEndValue(collapsed_height + content_height) # type: ignore
+        
+        content_animation = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
+
+        content_animation.setDuration(250) # type: ignore
+        content_animation.setStartValue(0) # type: ignore
+        content_animation.setEndValue(content_height) # type: ignore
+
+    def addNewWidget(self, widget: QWidget):
+        self.content_area.layout().addWidget(widget)
+        # new_layout = self.content_layout
+        # print(new_layout == self.content_layout)
+        # print(new_layout is self.content_layout)
+        # self.setContentLayout(self.content_layout)
+        self.updateContentAnimation()
+ 
