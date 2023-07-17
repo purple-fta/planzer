@@ -84,4 +84,20 @@ class KCollapsibleBox(QWidget):
         # print(new_layout is self.content_layout)
         # self.setContentLayout(self.content_layout)
         self.updateContentAnimation()
- 
+
+
+class KTaskList(QWidget):
+    def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
+        super().__init__()
+
+        QVBoxLayout(self)
+
+        self.high_priority_list = KCollapsibleBox("High", self)
+        self.normal_priority_list = KCollapsibleBox("normal", self)
+        self.low_priority_list = KCollapsibleBox("low", self)
+
+        self.layout().addWidget(self.high_priority_list)
+        self.layout().addWidget(self.normal_priority_list)
+        self.layout().addWidget(self.low_priority_list)
+
+        self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
