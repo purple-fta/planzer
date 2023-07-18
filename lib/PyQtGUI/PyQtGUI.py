@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteA
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QSplitter, QDockWidget, QTabBar,
                              QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QToolBar,  QPushButton, QLineEdit, QMdiArea, QTextEdit)
 
-from KWidgets import *
+from lib.PyQtGUI.KWidgets import *
 
 
 class MainWindow(QMainWindow):
