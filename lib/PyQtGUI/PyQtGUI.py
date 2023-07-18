@@ -12,24 +12,16 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setStyleSheet("border-color: black; border-width: 2px; border-style: outset; border-radius: 5px")
+        self.setupUI()
+        
 
+    def setupUI(self):
         # SIDEBAR
         sidebar_widget = QFrame()
         sidebar_widget.setFrameShape(QFrame.Shape.Box)
-        QVBoxLayout(sidebar_widget)
-        logo = QLabel("PLANZER")
-        sidebar_widget.layout().addWidget(logo)
-        cb = KCollapsibleBox("11111111")
-        l = QVBoxLayout()
-        l.addWidget(QLabel("123"))
-        l.addWidget(QLabel("123"))
-        l.addWidget(QLabel("123"))
-        l.addWidget(QLabel("123"))
-        l.addWidget(QLabel("123"))
-        cb.setContentLayout(l)
-        sidebar_widget.layout().addWidget(cb)
-        sidebar_widget.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        sidebar_layout = QVBoxLayout(sidebar_widget)
+        sidebar_layout.layout().addWidget(QLabel("PLANZER"))  # logo
+        sidebar_layout.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # TOOLBAR
         toolbar_widget = QWidget()
@@ -49,11 +41,13 @@ class MainWindow(QMainWindow):
         workspace_widget = QSplitter()
         workspace_widget.addWidget(KTaskList())
 
+        # WIDGET WITH TOOLBAR AND WORKSPACE
         central_widget = QWidget()
         central_layout = QVBoxLayout(central_widget)
-        central_layout.addWidget(toolbar_widget)        
-        central_layout.addWidget(workspace_widget)        
-        
+        central_layout.addWidget(toolbar_widget) 
+        central_layout.addWidget(workspace_widget) 
+
+        # MAIN WIDGET
         main_widget = QSplitter()
         QHBoxLayout(main_widget)
         main_widget.layout().addWidget(sidebar_widget)
