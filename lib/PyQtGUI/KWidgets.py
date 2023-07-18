@@ -1,7 +1,7 @@
 import typing
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import Qt, QSize, QRect, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem
 from lib.core.task import Task
 
 class KCollapsibleBox(QWidget):
@@ -95,3 +95,15 @@ class KTaskInList(QWidget):
         self.setLayout(QHBoxLayout())
 
         self.layout().addWidget(QLabel(task.name))
+
+class KNewTaskPopupWidget(QWidget):
+    def __init__(self, parent: QWidget | None = None, flags: Qt.WindowType = ...) -> None:
+        super().__init__(parent)
+        QHBoxLayout(self)
+        self.layout().addWidget(QLabel("POPUP"))
+        self.setStyleSheet("background-color: rgba(255, 0, 0, 0.5);")  # Установите желаемый стиль виджета
+
+    def show(self, x: int, y: int) -> None:
+        # self.setGeometry(x, y, 100, 100)
+        self.move(x, y)
+        super().show()

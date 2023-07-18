@@ -1,7 +1,7 @@
 import sys
 import typing
 
-from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
+from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation, QRect, QSize
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QSplitter, QDockWidget, QTabBar,
                              QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QToolBar,  QPushButton, QLineEdit, QMdiArea, QTextEdit)
 
@@ -30,8 +30,9 @@ class MainWindow(QMainWindow):
         toolbar_layout = QHBoxLayout(toolbar_widget)
         toolbar_layout.addWidget(QPushButton("Вкладка 1"))
         toolbar_layout.addWidget(QPushButton("Вкладка 2"))
-        toolbar_layout.addWidget(QPushButton(" + "))
-        toolbar_layout.addWidget(QLineEdit())
+        self.create_task_button = QPushButton("+")
+        self.create_task_button.clicked.connect(self.showPopupNewTask)
+        toolbar_layout.addWidget(self.create_task_button)
         toolbar_layout.addWidget(QPushButton("Список"))
         toolbar_layout.addWidget(QPushButton("ТаймЛайн"))
         toolbar_layout.addWidget(QPushButton("Календарь"))
@@ -54,10 +55,18 @@ class MainWindow(QMainWindow):
         main_widget.layout().addWidget(central_widget)
 
         self.setCentralWidget(main_widget)
+    
+    def showPopupNewTask(self):
+        popup_widget = KNewTaskPopupWidget(self)
+        pos = self.create_task_button.mapTo(self, QtCore.QPoint(0, 0))
+        print(pos)
+        popup_widget.show(pos.x(), pos.y())
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    
+
     app.exec()
