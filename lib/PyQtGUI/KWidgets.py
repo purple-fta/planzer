@@ -2,12 +2,12 @@ import typing
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem
-
+from lib.core.task import Task
 
 class KCollapsibleBox(QWidget):
     def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
-
+        
         self.arrow_button = QToolButton()
         self.arrow_button.setStyleSheet("QToolButton { border: none; }")
         self.arrow_button.setCheckable(True)
@@ -85,3 +85,13 @@ class KTaskList(QWidget):
         self.layout().addWidget(self.low_priority_list)
 
         self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+class KTaskInList(QWidget):
+    def __init__(self, task: Task, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
+        super().__init__()
+
+        self.task = task
+
+        self.setLayout(QHBoxLayout())
+
+        self.layout().addWidget(QLabel(task.name))
