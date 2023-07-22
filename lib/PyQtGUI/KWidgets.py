@@ -85,6 +85,16 @@ class KTaskList(QWidget):
         self.layout().addWidget(self.low_priority_list)
 
         self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+    
+    def addTask(self, task: Task):
+        task_widget = KTaskInList(task)
+
+        if task.priority == Priority.high:
+            self.high_priority_list.addNewWidget(task_widget)
+        elif task.priority == Priority.normal:
+            self.normal_priority_list.addNewWidget(task_widget)
+        elif task.priority == Priority.low:
+            self.low_priority_list.addNewWidget(task_widget)
 
 class KTaskInList(QWidget):
     def __init__(self, task: Task, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
