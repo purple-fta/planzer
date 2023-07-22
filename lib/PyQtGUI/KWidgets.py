@@ -1,8 +1,8 @@
 import typing
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt, QSize, QRect, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
-from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem
-from lib.core.task import Task
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
+from lib.core.task import *
 
 class KCollapsibleBox(QWidget):
     def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
@@ -96,6 +96,7 @@ class KTaskList(QWidget):
         elif task.priority == Priority.low:
             self.low_priority_list.addNewWidget(task_widget)
 
+
 class KTaskInList(QWidget):
     def __init__(self, task: Task, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
@@ -109,11 +110,22 @@ class KTaskInList(QWidget):
 class KNewTaskPopupWidget(QWidget):
     def __init__(self, parent: QWidget | None = None, flags: Qt.WindowType = ...) -> None:
         super().__init__(parent)
+
+        self.setStyleSheet("background-color: rgba(248, 248, 0, 1);")  # Установите желаемый стиль виджета
+        self.setMinimumWidth(250)
+        self.setMinimumHeight(250)
+        
         QHBoxLayout(self)
+
         self.layout().addWidget(QLabel("POPUP"))
-        self.setStyleSheet("background-color: rgba(255, 0, 0, 0.5);")  # Установите желаемый стиль виджета
+        self.layout().addWidget(QLineEdit())
+        self.layout().addWidget(push_button := QPushButton("CREATE"))
+
+        push_button.clicked.connect(self.push_button_clicked)
+
+    def push_button_clicked(self):
+        self.hide()  #TODO: нужно как-то освободить память. Сейчас оно его скрывает, но не удаляет
 
     def show(self, x: int, y: int) -> None:
-        # self.setGeometry(x, y, 100, 100)
-        self.move(x, y)
+        self.move(x-50, y+50)
         super().show()
