@@ -3,9 +3,11 @@ import typing
 
 from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation, QRect, QSize
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QSplitter, QDockWidget, QTabBar,
-                             QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QToolBar,  QPushButton, QLineEdit, QMdiArea, QTextEdit)
+                             QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QToolBar,  QPushButton, QLineEdit, QMdiArea, QTextEdit, QStyle)
 
 from lib.PyQtGUI.KWidgets import *
+
+from lib.core.task import *
 
 
 class MainWindow(QMainWindow):
@@ -21,8 +23,7 @@ class MainWindow(QMainWindow):
 
     def setupUI(self):
         # SIDEBAR
-        sidebar_widget = QFrame()
-        sidebar_widget.setFrameShape(QFrame.Shape.Box)
+        sidebar_widget = QWidget()
         sidebar_layout = QVBoxLayout(sidebar_widget)
         sidebar_layout.layout().addWidget(QLabel("PLANZER"))  # logo
         sidebar_layout.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -46,7 +47,9 @@ class MainWindow(QMainWindow):
 
         # WORKSPACE
         workspace_widget = QSplitter()
-        workspace_widget.addWidget(KTaskList())
+        task_list = KTaskList()
+        task_list.addTask(Task("Lorem", Priority.high, [Tag(" #Tag1 ", QtGui.QColor(255, 184, 108)), Tag(" #Tag2 ", QtGui.QColor(189, 147, 249))], None, datetime(2024, 10, 10)))
+        workspace_widget.addWidget(task_list)
 
         # WIDGET WITH TOOLBAR AND WORKSPACE
         central_widget = QWidget()
@@ -65,7 +68,6 @@ class MainWindow(QMainWindow):
     def showPopupNewTask(self):
         popup_widget = KNewTaskPopupWidget(self)
         pos = self.create_task_button.mapTo(self, QtCore.QPoint(0, 0))
-        print(pos)
         popup_widget.show(pos.x(), pos.y())
 
 
