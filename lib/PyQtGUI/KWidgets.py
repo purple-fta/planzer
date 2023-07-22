@@ -103,9 +103,27 @@ class KTaskInList(QWidget):
 
         self.task = task
 
-        self.setLayout(QHBoxLayout())
+        self.setLayout(QVBoxLayout())
+
+        
+        tags_widget = QWidget()
+        tags_widget.setLayout(QHBoxLayout())
+        for tag in task.tags:
+            label = QLabel(tag.name)
+            label.setStyleSheet(f"background-color: rgba{tag.decor.getRgb()}; border-radius: 5px")
+            tags_widget.layout().addWidget(label)
+        
+        tags_widget.layout().addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+
+        deadline_widget = QWidget()
+        deadline_widget.setLayout(QHBoxLayout())
+        deadline_widget.layout().addWidget(QLabel("D"))
+        deadline_widget.layout().addWidget(QLabel(str(task.deadline)))
+        deadline_widget.layout().addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         self.layout().addWidget(QLabel(task.name))
+        self.layout().addWidget(tags_widget)
+        self.layout().addWidget(deadline_widget)
 
 class KNewTaskPopupWidget(QWidget):
     def __init__(self, parent: QWidget | None = None, flags: Qt.WindowType = ...) -> None:
