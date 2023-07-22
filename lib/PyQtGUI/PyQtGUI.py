@@ -13,7 +13,11 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setupUI()
-        
+
+        self.setupStyle()
+
+    def setupStyle(self):
+        self.setStyleSheet("background-color: #282a36; color: #f8f8f2")
 
     def setupUI(self):
         # SIDEBAR
