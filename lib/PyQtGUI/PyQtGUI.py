@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setupUI()
-
+        self.setupConnects()
         self.setupStyle()
 
     def setupStyle(self):
@@ -37,25 +37,25 @@ class MainWindow(QMainWindow):
         toolbar_layout.addWidget(QPushButton("2"))
         toolbar_layout.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum))
         self.create_task_button = QPushButton("+")
-        self.create_task_button.clicked.connect(self.showPopupNewTask)
         toolbar_layout.addWidget(self.create_task_button)
         toolbar_layout.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        toolbar_layout.addWidget(QPushButton("С"))
+        self.calendar_tool_button = QPushButton("C")
+        toolbar_layout.addWidget(self.calendar_tool_button)
         toolbar_layout.addWidget(QPushButton("Т"))
         toolbar_layout.addWidget(QPushButton("К"))
         toolbar_layout.addWidget(QPushButton("Н"))
 
         # WORKSPACE
-        workspace_widget = QSplitter()
+        self.workspace_widget = QSplitter()
         task_list = KTaskList()
         task_list.addTask(Task("Lorem", Priority.high, [Tag(" #Tag1 ", QtGui.QColor(255, 184, 108)), Tag(" #Tag2 ", QtGui.QColor(189, 147, 249))], None, datetime(2024, 10, 10)))
-        workspace_widget.addWidget(task_list)
+        self.workspace_widget.addWidget(task_list)
 
         # WIDGET WITH TOOLBAR AND WORKSPACE
         central_widget = QWidget()
         central_layout = QVBoxLayout(central_widget)
         central_layout.addWidget(toolbar_widget) 
-        central_layout.addWidget(workspace_widget) 
+        central_layout.addWidget(self.workspace_widget) 
 
         # MAIN WIDGET
         main_widget = QSplitter()
@@ -65,6 +65,13 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(main_widget)
     
+    def setupConnects(self):
+        self.create_task_button.clicked.connect(self.showPopupNewTask)
+        self.calendar_tool_button.clicked.connect(lambda: self._create_new_window(KCalendar()))
+
+    def _create_new_window(self, widget):
+        self.workspace_widget.addWidget(widget)
+
     def showPopupNewTask(self):
         popup_widget = KNewTaskPopupWidget(self)
         pos = self.create_task_button.mapTo(self, QtCore.QPoint(0, 0))

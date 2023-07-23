@@ -1,7 +1,7 @@
 import typing
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt, QSize, QRect, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
-from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QCalendarWidget, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
 from lib.core.task import *
 
 class KCollapsibleBox(QWidget):
@@ -147,3 +147,8 @@ class KNewTaskPopupWidget(QWidget):
     def show(self, x: int, y: int) -> None:
         self.move(x-50, y+50)
         super().show()
+
+
+class KCalendar(QCalendarWidget):
+    def __init__(self, parent: QWidget | None = ...) -> None:
+        super().__init__()
