@@ -84,8 +84,7 @@ class MainWindow(QMainWindow):
     def showPopupNewTask(self):
         popup_widget = KNewTaskPopupWidget(self)
         pos = self.create_task_button.mapTo(self, QtCore.QPoint(0, 0))
-        popup_widget.show(pos.x(), pos.y())
-
+        popup_widget.show(pos.x()+int(self.create_task_button.geometry().width()/2), pos.y())
 
 
 if __name__ == "__main__":

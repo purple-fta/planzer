@@ -125,13 +125,13 @@ class KTaskInList(QWidget):
         self.layout().addWidget(tags_widget)
         self.layout().addWidget(deadline_widget)
 
-class KNewTaskPopupWidget(QWidget):
+class KNewTaskPopupWidget(QFrame):
     def __init__(self, parent: QWidget | None = None, flags: Qt.WindowType = ...) -> None:
         super().__init__(parent)
 
-        self.setStyleSheet("background-color: rgba(248, 248, 0, 1);")  # Установите желаемый стиль виджета
-        self.setMinimumWidth(250)
-        self.setMinimumHeight(250)
+        self.setStyleSheet("QFrame {background: rgba(68, 71, 90, 1); border-radius: 10px;}")  # Установите желаемый стиль виджета
+        self.setMinimumWidth(350)
+        self.setMinimumHeight(100)
         
         QHBoxLayout(self)
 
@@ -145,7 +145,7 @@ class KNewTaskPopupWidget(QWidget):
         self.hide()  #TODO: нужно как-то освободить память. Сейчас оно его скрывает, но не удаляет
 
     def show(self, x: int, y: int) -> None:
-        self.move(x-50, y+50)
+        self.move(int(x-self.geometry().width()/2), y+30)
         super().show()
 
 
