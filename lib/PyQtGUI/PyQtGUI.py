@@ -29,28 +29,33 @@ class MainWindow(QMainWindow):
         sidebar_layout.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # TOOLBAR
+        self.first_tab_button     = QToolButton()
+        self.second_tab_button    = QToolButton()
+        self.create_task_button   = QPushButton("+")
+        self.list_tool_button     = QToolButton()
+        self.calendar_tool_button = QToolButton()
+        self.settings_tool_button = QToolButton()
+
+        self.first_tab_button.setText("1")
+        self.second_tab_button.setText("2")
+        self.list_tool_button.setText("L")
+        self.calendar_tool_button.setText("C")
+        self.settings_tool_button.setText("S")
+
         toolbar_widget = QWidget()
         toolbar_widget.setMaximumHeight(40)
         toolbar_widget.setMinimumHeight(40)
         toolbar_layout = QHBoxLayout(toolbar_widget)
-        self.first_tab_button = QToolButton()
-        self.first_tab_button.setText("1")
-        self.second_tab_button = QToolButton()
-        self.second_tab_button.setText("2")
         toolbar_layout.addWidget(self.first_tab_button)
+
         toolbar_layout.addWidget(self.second_tab_button)
+        
         toolbar_layout.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        self.create_task_button = QPushButton("+")
         toolbar_layout.addWidget(self.create_task_button)
         toolbar_layout.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        self.list_tool_button = QToolButton()
-        self.list_tool_button.setText("L")
+        
         toolbar_layout.addWidget(self.list_tool_button)
-        self.calendar_tool_button = QToolButton()
-        self.calendar_tool_button.setText("C")
         toolbar_layout.addWidget(self.calendar_tool_button)
-        self.settings_tool_button = QToolButton()
-        self.settings_tool_button.setText("S")
         toolbar_layout.addWidget(self.settings_tool_button)
 
 
@@ -77,6 +82,7 @@ class MainWindow(QMainWindow):
     def setupConnects(self):
         self.create_task_button.clicked.connect(self.showPopupNewTask)
         self.calendar_tool_button.clicked.connect(lambda: self._create_new_window(KCalendar()))
+        self.list_tool_button.clicked.connect(lambda: self._create_new_window(KTaskList()))
 
     def _create_new_window(self, widget):
         self.workspace_widget.addWidget(widget)
