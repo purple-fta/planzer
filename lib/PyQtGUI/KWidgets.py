@@ -1,7 +1,7 @@
 import typing
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt, QSize, QRect, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
-from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QCalendarWidget, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QSizePolicy, QCalendarWidget, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
 from lib.core.task import *
 
 class KCollapsibleBox(QWidget):
@@ -80,6 +80,7 @@ class KTaskList(QWidget):
         self.normal_priority_list = KCollapsibleBox("normal", self)
         self.low_priority_list = KCollapsibleBox("low", self)
 
+        self.layout().addWidget(KWorkspaceWindowTitleBar("Task List"))
         self.layout().addWidget(self.high_priority_list)
         self.layout().addWidget(self.normal_priority_list)
         self.layout().addWidget(self.low_priority_list)
@@ -147,6 +148,21 @@ class KNewTaskPopupWidget(QFrame):
     def show(self, x: int, y: int) -> None:
         self.move(int(x-self.geometry().width()/2), y+30)
         super().show()
+
+
+class KWorkspaceWindowTitleBar(QWidget):
+    def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
+        super().__init__()
+
+        QHBoxLayout(self)
+
+        self.layout().addWidget(QLabel(title))
+
+        self.layout().addItem(QSpacerItem(1, 1, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
+
+        self.close_button = QToolButton()
+        self.close_button.setText("X")
+        self.layout().addWidget(self.close_button)
 
 
 class KCalendar(QCalendarWidget):
