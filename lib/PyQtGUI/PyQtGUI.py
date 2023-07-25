@@ -1,5 +1,6 @@
 import sys
 import typing
+from PyQt5 import QtGui
 
 from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation, QRect, QSize
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QSplitter, QDockWidget, QTabBar,
@@ -77,6 +78,8 @@ class MainWindow(QMainWindow):
         main_widget.layout().addWidget(sidebar_widget)
         main_widget.layout().addWidget(central_widget)
 
+        self.popup_widget = None
+        
         self.setCentralWidget(main_widget)
     
     def setupConnects(self):
@@ -84,14 +87,20 @@ class MainWindow(QMainWindow):
         self.calendar_tool_button.clicked.connect(lambda: self._create_new_window(KCalendar()))
         self.list_tool_button.clicked.connect(lambda: self._create_new_window(KTaskList()))
 
+    def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
+        if self.popup_widget is not None:
+            if not self.popup_widget.underMouse():
+                self.popup_widget.hide()
+        return super().mousePressEvent(a0)
+
     def _create_new_window(self, widget):
         self.workspace_widget.addWidget(widget)
 
     def showPopupNewTask(self):
-        popup_widget = KNewTaskPopupWidget(self)
+        if self.popup_widget is None:
+            self.popup_widget = KNewTaskPopupWidget(self)
         pos = self.create_task_button.mapTo(self, QtCore.QPoint(0, 0))
-        popup_widget.show(pos.x()+int(self.create_task_button.geometry().width()/2), pos.y())
-
+        self.popup_widget.show(pos.x()+int(self.create_task_button.geometry().width()/2), pos.y())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
