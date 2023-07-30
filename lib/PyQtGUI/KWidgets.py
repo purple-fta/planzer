@@ -70,36 +70,6 @@ class KCollapsibleBox(QWidget):
         self.updateContentAnimation()
 
 
-class KTaskList(QWidget):
-    def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
-        super().__init__()
-
-        QVBoxLayout(self)
-
-        self.high_priority_list = KCollapsibleBox("High", self)
-        self.normal_priority_list = KCollapsibleBox("normal", self)
-        self.low_priority_list = KCollapsibleBox("low", self)
-
-        self.title_bar = KWorkspaceWindowTitleBar("Task List")
-        self.title_bar.initCancelButton(self)
-        self.layout().addWidget(self.title_bar)
-        self.layout().addWidget(self.high_priority_list)
-        self.layout().addWidget(self.normal_priority_list)
-        self.layout().addWidget(self.low_priority_list)
-
-        self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-    
-    def addTask(self, task: Task):
-        task_widget = KTaskInList(task)
-
-        if task.priority == Priority.high:
-            self.high_priority_list.addNewWidget(task_widget)
-        elif task.priority == Priority.normal:
-            self.normal_priority_list.addNewWidget(task_widget)
-        elif task.priority == Priority.low:
-            self.low_priority_list.addNewWidget(task_widget)
-
-
 class KTaskInList(QWidget):
     def __init__(self, task: Task, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
@@ -170,14 +140,45 @@ class KWorkspaceWindowTitleBar(QWidget):
         self.close_button.clicked.connect(lambda: parent_widget.hide())  # TODO: нужно освободить память
 
 
-class KCalendar(QWidget):
-    def __init__(self, parent: QWidget | None = ...) -> None:
+class KWorkspaceWindow(QWidget):
+    def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
-
+    
         QVBoxLayout(self)
-
-        title_bar = KWorkspaceWindowTitleBar("Calendar")
+    
+        title_bar = KWorkspaceWindowTitleBar(title)
         title_bar.initCancelButton(self)
-
+    
         self.layout().addWidget(title_bar)
+
+
+class KCalendar(KWorkspaceWindow):
+    def __init__(self, parent: QWidget | None = ...) -> None:
+        super().__init__("Calendar")
+
         self.layout().addWidget(QCalendarWidget())
+
+
+class KTaskList(KWorkspaceWindow):
+    def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
+        super().__init__("Task List")
+
+        self.high_priority_list = KCollapsibleBox("High", self)
+        self.normal_priority_list = KCollapsibleBox("normal", self)
+        self.low_priority_list = KCollapsibleBox("low", self)
+
+        self.layout().addWidget(self.high_priority_list)
+        self.layout().addWidget(self.normal_priority_list)
+        self.layout().addWidget(self.low_priority_list)
+
+        self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+    
+    def addTask(self, task: Task):
+        task_widget = KTaskInList(task)
+
+        if task.priority == Priority.high:
+            self.high_priority_list.addNewWidget(task_widget)
+        elif task.priority == Priority.normal:
+            self.normal_priority_list.addNewWidget(task_widget)
+        elif task.priority == Priority.low:
+            self.low_priority_list.addNewWidget(task_widget)
