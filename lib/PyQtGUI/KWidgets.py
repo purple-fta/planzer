@@ -80,7 +80,9 @@ class KTaskList(QWidget):
         self.normal_priority_list = KCollapsibleBox("normal", self)
         self.low_priority_list = KCollapsibleBox("low", self)
 
-        self.layout().addWidget(KWorkspaceWindowTitleBar("Task List"))
+        self.title_bar = KWorkspaceWindowTitleBar("Task List")
+        self.title_bar.initCancelButton(self)
+        self.layout().addWidget(self.title_bar)
         self.layout().addWidget(self.high_priority_list)
         self.layout().addWidget(self.normal_priority_list)
         self.layout().addWidget(self.low_priority_list)
@@ -164,7 +166,18 @@ class KWorkspaceWindowTitleBar(QWidget):
         self.close_button.setText("X")
         self.layout().addWidget(self.close_button)
 
+    def initCancelButton(self, parent_widget: QWidget):
+        self.close_button.clicked.connect(lambda: parent_widget.hide())  # TODO: нужно освободить память
 
-class KCalendar(QCalendarWidget):
+
+class KCalendar(QWidget):
     def __init__(self, parent: QWidget | None = ...) -> None:
         super().__init__()
+
+        QVBoxLayout(self)
+
+        title_bar = KWorkspaceWindowTitleBar("Calendar")
+        title_bar.initCancelButton(self)
+
+        self.layout().addWidget(title_bar)
+        self.layout().addWidget(QCalendarWidget())
