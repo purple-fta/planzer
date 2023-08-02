@@ -1,7 +1,7 @@
 from lib.PyQtGUI.AbstractPlugin import AbstractPlugin
 from lib.PyQtGUI.abstractMainWindow import AbstractMainWindow
 
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QToolButton
 
 
 class TabsPlugin(AbstractPlugin):
