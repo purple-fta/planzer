@@ -3,8 +3,8 @@ from lib.PyQtGUI.KWidgets import *
 
 
 class PlanzerCorePlugin(AbstractPlugin):
-    def __init__(self, ui, name: str, description: str) -> None:
-        super().__init__(ui, name, description)
+    def __init__(self, ui) -> None:
+        super().__init__(ui)
 
         self.create_task_button   = QPushButton("+")
         self.list_tool_button     = QToolButton()

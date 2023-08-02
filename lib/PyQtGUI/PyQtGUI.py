@@ -127,7 +127,7 @@ class MainWindow(AbstractMainWindow):
 
     def upload_plugins(self):
         for plugin in plugins_classes:
-            plugin(self, "Base plugin", "Description...")
+            plugin(self)
 
     def leftToolBar_addWidget(self, widget: QWidget):
         self.left_toolbar_widget.layout().addWidget(widget)
