@@ -1,7 +1,7 @@
 from lib.PyQtGUI.abstractMainWindow import AbstractMainWindow
 
 class AbstractPlugin:
-    def __init__(self, ui: AbstractMainWindow, name: str, description: str) -> None:
+    def __init__(self, ui: AbstractMainWindow) -> None:
         self.ui = ui
-        self.name = name
-        self.description = description
+        self.name = "Name"
+        self.description = "Description"
