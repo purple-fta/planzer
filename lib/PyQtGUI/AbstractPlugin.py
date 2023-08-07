@@ -1,4 +1,5 @@
-from lib.PyQtGUI.abstractMainWindow import AbstractMainWindow
+from lib.PyQtGUI.abstract_main_window import AbstractMainWindow
+
 
 class AbstractPlugin:
     def __init__(self, ui: AbstractMainWindow) -> None:

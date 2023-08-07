@@ -3,7 +3,7 @@ import sys  # to pass arguments from the command line
 from PyQt5.QtWidgets import (QSplitter)
 
 from lib.PyQtGUI.KWidgets import *
-from lib.PyQtGUI.abstractMainWindow import AbstractMainWindow
+from lib.PyQtGUI.abstract_main_window import AbstractMainWindow
 from lib.PyQtGUI.standard_plugins import plugins_classes
 
 

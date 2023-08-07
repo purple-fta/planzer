@@ -1,5 +1,5 @@
 from lib.PyQtGUI.AbstractPlugin import AbstractPlugin
-from lib.PyQtGUI.abstractMainWindow import AbstractMainWindow
+from lib.PyQtGUI.abstract_main_window import AbstractMainWindow
 
 from PyQt5.QtWidgets import QToolButton
 
@@ -10,10 +10,10 @@ class TabsPlugin(AbstractPlugin):
 
         self.first_tab_button = QToolButton()
         self.second_tab_button = QToolButton()
-        
+
         self.set_localization()
         self.setup_ui()
-        
+
     def set_localization(self):
         self.first_tab_button.setText("1")
         self.second_tab_button.setText("2")
