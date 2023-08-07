@@ -1,17 +1,11 @@
-import sys
-import typing
-from PyQt5 import QtGui
+import sys  # to pass arguments from the command line
 
-from PyQt5.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation, QRect, QSize
-from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QSplitter, QDockWidget, QTabBar,
-                             QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QToolBar,  QPushButton, QLineEdit, QMdiArea, QTextEdit, QStyle)
+from PyQt5.QtWidgets import (QSplitter)
 
 from lib.PyQtGUI.KWidgets import *
-
-from lib.core.task import *
-
 from lib.PyQtGUI.abstractMainWindow import AbstractMainWindow
 from lib.PyQtGUI.standard_plugins import plugins_classes
+
 
 class MainWindow(AbstractMainWindow):
     def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
@@ -24,15 +18,15 @@ class MainWindow(AbstractMainWindow):
         self.toolbar_widget = QWidget()
         self.toolbar_widget.setMaximumHeight(50)
         self.toolbar_widget.setMinimumHeight(50)
-        
+
         # TOOLBAR SECTIONS
-        self.left_toolbar_widget    = QWidget()
+        self.left_toolbar_widget = QWidget()
         self.central_toolbar_widget = QWidget()
-        self.right_toolbar_widget   = QWidget()
+        self.right_toolbar_widget = QWidget()
 
         # TOOLBAR BUTTONS
-        self.first_tab_button     = QToolButton()
-        self.second_tab_button    = QToolButton()
+        self.first_tab_button = QToolButton()
+        self.second_tab_button = QToolButton()
         self.settings_tool_button = QToolButton()
 
         # WORKSPACE
@@ -40,26 +34,32 @@ class MainWindow(AbstractMainWindow):
 
         # CENTRAL WIDGET WITH TOOLBAR AND WORKSPACE
         self.central_widget = QWidget()
-        
+
         # MAIN WIDGET
         self.main_widget = QSplitter()
 
         self.popup_widget = None
 
         self.set_layouts()
-        self.setupStyle()
-        self.setupUI()
+        self.set_style()
+        self.setup_ui()
         self.setupConnects()
 
         self.upload_plugins()
 
     def set_localization(self):
+        """
+            Set text in UI
+        """
         self.first_tab_button.setText("1")
         self.second_tab_button.setText("2")
 
-    def setupStyle(self):
+    def set_style(self):
+        """
+            Set UI style
+        """
         self.setStyleSheet("background-color: #282a36; color: #f8f8f2;")
-        
+
         self.left_toolbar_widget.layout().setContentsMargins(0, 0, 0, 0)
         self.right_toolbar_widget.layout().setContentsMargins(0, 0, 0, 0)
         self.central_toolbar_widget.layout().setContentsMargins(0, 0, 0, 0)
@@ -67,6 +67,9 @@ class MainWindow(AbstractMainWindow):
         self.toolbar_widget.layout().setContentsMargins(0, 0, 0, 0)
 
     def set_layouts(self):
+        """
+            Set empty layouts to widgets
+        """
         # SIDEBAR
         self.sidebar_widget.setLayout(QVBoxLayout())
 
@@ -81,7 +84,11 @@ class MainWindow(AbstractMainWindow):
         # CENTRAL WIDGET WITH TOOLBAR AND WORKSPACE
         self.central_widget.setLayout(QVBoxLayout())
 
-    def setupUI(self):
+    def setup_ui(self):
+        """
+           Arrange all elements in layouts. Must call later set_layouts()
+        """
+
         # SIDEBAR
         self.sidebar_widget.layout().addWidget(QLabel("PLANZER"))  # logo
         self.sidebar_widget.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -103,11 +110,8 @@ class MainWindow(AbstractMainWindow):
 
         # SET CENTRAL WIDGET
         self.setCentralWidget(self.main_widget)
-    
-    def setupConnects(self):
-        # self.create_task_button.clicked.connect(self.showPopupNewTask)
-        # self.calendar_tool_button.clicked.connect(lambda: self._create_new_window(KCalendar()))
-        # self.list_tool_button.clicked.connect(lambda: self._create_new_window(KTaskList()))
+
+    def setup_connects(self):
         pass
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
@@ -116,14 +120,18 @@ class MainWindow(AbstractMainWindow):
                 self.popup_widget.hide()
         return super().mousePressEvent(a0)
 
-    def create_new_window(self, widget):
+    def add_widget_to_workspace(self, widget: QWidget):
+        """
+        Args:
+            widget: Widget for add to workspace
+        """
         self.workspace_widget.addWidget(widget)
 
     def showPopupNewTask(self):
         if self.popup_widget is None:
             self.popup_widget = KNewTaskPopupWidget(self)
         pos = self.create_task_button.mapTo(self, QtCore.QPoint(0, 0))
-        self.popup_widget.show(pos.x()+int(self.create_task_button.geometry().width()/2), pos.y())
+        self.popup_widget.show(pos.x() + int(self.create_task_button.geometry().width() / 2), pos.y())
 
     def upload_plugins(self):
         for plugin in plugins_classes:
