@@ -43,7 +43,7 @@ class MainWindow(AbstractMainWindow):
         self.set_layouts()
         self.set_style()
         self.setup_ui()
-        self.setupConnects()
+        self.setup_connects()
 
         self.upload_plugins()
 
