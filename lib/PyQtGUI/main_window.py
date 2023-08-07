@@ -1,6 +1,7 @@
 import sys  # to pass arguments from the command line
 
-from PyQt5.QtWidgets import (QSplitter)
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import (QSplitter, QApplication)
 
 from lib.PyQtGUI.KWidgets import *
 from lib.PyQtGUI.abstract_main_window import AbstractMainWindow
