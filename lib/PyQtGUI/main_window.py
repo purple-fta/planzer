@@ -8,6 +8,11 @@ from lib.PyQtGUI.standard_plugins import plugins_classes
 
 
 class MainWindow(AbstractMainWindow):
+    """
+        Qt window to display all elements and use all logic. It launches the program
+    """
+
+    # TODO: Либо используем аргументы, либо удаляем. Нахер они тут неиспользуемые нужны?
     def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
 
@@ -43,7 +48,7 @@ class MainWindow(AbstractMainWindow):
         self.set_layouts()
         self.set_style()
         self.setup_ui()
-        self.setup_connects()
+        self.set_connects()
 
         self.upload_plugins()
 
@@ -111,7 +116,10 @@ class MainWindow(AbstractMainWindow):
         # SET CENTRAL WIDGET
         self.setCentralWidget(self.main_widget)
 
-    def setup_connects(self):
+    def set_connects(self):
+        """
+            Set connects to initial window widgets
+        """
         pass
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
