@@ -1,19 +1,25 @@
-import typing
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import Qt, QSize, QRect, QParallelAnimationGroup, QPropertyAnimation, QByteArray, QAbstractAnimation
-from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QMainWindow, QToolButton, QSizePolicy, QCalendarWidget, QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
+from PyQt5.QtCore import QAbstractAnimation, Qt, QParallelAnimationGroup
+from PyQt5.QtWidgets import QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QCalendarWidget, \
+                            QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
+
 from lib.core.task import *
 
+
 class KCollapsibleBox(QWidget):
+    """
+        List of widgets that can be collapsed and expanded on click
+    """
+    # TODO: параметры... на кой чёрт они нужны? Или удаляем, или задействуем
     def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
-        
+
         self.arrow_button = QToolButton()
         self.arrow_button.setStyleSheet("QToolButton { border: none; }")
         self.arrow_button.setCheckable(True)
         self.arrow_button.setText(title)
         self.arrow_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.arrow_button.setArrowType(Qt.ArrowType.RightArrow)
+        # noinspection PyUnresolvedReferences
         self.arrow_button.pressed.connect(self.on_pressed)
 
         self.toggle_animation = QParallelAnimationGroup(self)
@@ -24,50 +30,74 @@ class KCollapsibleBox(QWidget):
         self.content_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.content_area.setFrameStyle(QFrame.Shape.NoFrame)
         QVBoxLayout(self.content_area)
-        
+
         self.content_layout = QVBoxLayout(self)
         self.content_layout.setSpacing(0)
         self.content_layout.setContentsMargins(0, 0, 0, 0)
         self.content_layout.addWidget(self.arrow_button)
         self.content_layout.addWidget(self.content_area)
 
-        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"minimumHeight")) # type: ignore
-        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"maximumHeight")) # type: ignore
-        self.toggle_animation.addAnimation(QPropertyAnimation(self.content_area, b"maximumHeight")) # type: ignore
+        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"minimumHeight"))  # type: ignore
+        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"maximumHeight"))  # type: ignore
+        self.toggle_animation.addAnimation(QPropertyAnimation(self.content_area, b"maximumHeight"))  # type: ignore
 
     def on_pressed(self):
+        """
+        Method to be executed if the expand button is pressed
+        """
         checked = self.arrow_button.isChecked()
 
-        self.arrow_button.setArrowType( Qt.ArrowType.DownArrow if not checked else Qt.ArrowType.RightArrow )
+        self.arrow_button.setArrowType(Qt.ArrowType.DownArrow if not checked else Qt.ArrowType.RightArrow)
 
-        self.toggle_animation.setDirection( QAbstractAnimation.Direction.Forward if not checked else QAbstractAnimation.Direction.Backward )
+        self.toggle_animation.setDirection(QAbstractAnimation.Direction.Forward if not checked else
+                                           QAbstractAnimation.Direction.Backward)
         self.toggle_animation.start()
 
-    def setContentLayout(self, layout: QLayout):
+    def set_content_layout(self, layout: QLayout):
+        """
+        Sets the widgetized layout for the Collapsible Box
+
+        Args:
+            layout: with widgets (vertical recommended)
+        """
+
+        # TODO: вполне возможно переопределить стандартный setLayout()
+
         lay = self.content_area.layout()
         del lay
         self.content_area.setLayout(layout)
-        
-        self.updateContentAnimation()
 
-    def updateContentAnimation(self):
+        self.update_content_animation()
+
+    def update_content_animation(self):
+        """
+        When changing the height of a list with widgets (due to adding, deleting or changing),
+        you need to update the collapse and expand animation values. This method does just that.
+        """
+
         collapsed_height = self.sizeHint().height() - self.content_area.maximumHeight()
         content_height = self.content_area.layout().sizeHint().height()
         for i in range(self.toggle_animation.animationCount()):
             animation = self.toggle_animation.animationAt(i)
-            animation.setDuration(250) # type: ignore
-            animation.setStartValue(collapsed_height) # type: ignore
-            animation.setEndValue(collapsed_height + content_height) # type: ignore
-        
+            animation.setDuration(250)  # type: ignore
+            animation.setStartValue(collapsed_height)  # type: ignore
+            animation.setEndValue(collapsed_height + content_height)  # type: ignore
+
         content_animation = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
 
-        content_animation.setDuration(250) # type: ignore
-        content_animation.setStartValue(0) # type: ignore
-        content_animation.setEndValue(content_height) # type: ignore
+        content_animation.setDuration(250)  # type: ignore
+        content_animation.setStartValue(0)  # type: ignore
+        content_animation.setEndValue(content_height)  # type: ignore
 
-    def addNewWidget(self, widget: QWidget):
+    def add_new_widget(self, widget: QWidget):
+        """
+        Adds a widget to the list, automatically updates the animation
+
+        Args:
+            widget:
+        """
         self.content_area.layout().addWidget(widget)
-        self.updateContentAnimation()
+        self.update_content_animation()
 
 
 class KTaskInList(QWidget):
@@ -78,14 +108,13 @@ class KTaskInList(QWidget):
 
         self.setLayout(QVBoxLayout())
 
-        
         tags_widget = QWidget()
         tags_widget.setLayout(QHBoxLayout())
         for tag in task.tags:
             label = QLabel(tag.name)
             label.setStyleSheet(f"background-color: rgba{tag.decor.getRgb()}; border-radius: 5px")
             tags_widget.layout().addWidget(label)
-        
+
         tags_widget.layout().addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         deadline_widget = QWidget()
@@ -98,14 +127,16 @@ class KTaskInList(QWidget):
         self.layout().addWidget(tags_widget)
         self.layout().addWidget(deadline_widget)
 
+
 class KNewTaskPopupWidget(QFrame):
     def __init__(self, parent: QWidget | None = None, flags: Qt.WindowType = ...) -> None:
         super().__init__(parent)
 
-        self.setStyleSheet("QFrame {background: rgba(68, 71, 90, 1); border-radius: 10px;}")  # Установите желаемый стиль виджета
+        self.setStyleSheet(
+            "QFrame {background: rgba(68, 71, 90, 1); border-radius: 10px;}")  # Установите желаемый стиль виджета
         self.setMinimumWidth(350)
         self.setMinimumHeight(100)
-        
+
         QHBoxLayout(self)
 
         self.layout().addWidget(QLabel("POPUP"))
@@ -115,10 +146,10 @@ class KNewTaskPopupWidget(QFrame):
         push_button.clicked.connect(self.push_button_clicked)
 
     def push_button_clicked(self):
-        self.hide()  #TODO: нужно как-то освободить память. Сейчас оно его скрывает, но не удаляет
+        self.hide()  # TODO: нужно как-то освободить память. Сейчас оно его скрывает, но не удаляет
 
     def show(self, x: int, y: int) -> None:
-        self.move(int(x-self.geometry().width()/2), y+30)
+        self.move(int(x - self.geometry().width() / 2), y + 30)
         super().show()
 
 
@@ -143,12 +174,12 @@ class KWorkspaceWindowTitleBar(QWidget):
 class KWorkspaceWindow(QWidget):
     def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
-    
+
         QVBoxLayout(self)
-    
+
         title_bar = KWorkspaceWindowTitleBar(title)
         title_bar.initCancelButton(self)
-    
+
         self.layout().addWidget(title_bar)
 
 
@@ -172,13 +203,13 @@ class KTaskList(KWorkspaceWindow):
         self.layout().addWidget(self.low_priority_list)
 
         self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-    
+
     def addTask(self, task: Task):
         task_widget = KTaskInList(task)
 
         if task.priority == Priority.high:
-            self.high_priority_list.addNewWidget(task_widget)
+            self.high_priority_list.add_new_widget(task_widget)
         elif task.priority == Priority.normal:
-            self.normal_priority_list.addNewWidget(task_widget)
+            self.normal_priority_list.add_new_widget(task_widget)
         elif task.priority == Priority.low:
-            self.low_priority_list.addNewWidget(task_widget)
+            self.low_priority_list.add_new_widget(task_widget)
