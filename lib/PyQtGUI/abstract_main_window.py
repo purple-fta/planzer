@@ -1,18 +1,38 @@
-import typing
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget
 
 
 class AbstractMainWindow(QMainWindow):
+    """
+        An interface through which plugins can interact with a window
+    """
+
     def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
 
-    def leftToolBar_addWidget(self, widget: QWidget):
-        pass
-    
-    def rightToolBar_addWidget(self, widget: QWidget):
+    def add_widget_to_toolbar_left(self, widget: QWidget):
+        """
+        Adds a widget to the left side of the toolbar
+
+        Args:
+            widget:
+        """
         pass
 
-    def centerToolBar_addWidget(self, widget: QWidget):
+    def add_widget_to_toolbar_right(self, widget: QWidget):
+        """
+        Adds a widget to the right side of the toolbar
+
+        Args:
+            widget:
+        """
         pass
- 
+
+    def add_widget_to_toolbar_center(self, widget: QWidget):
+        """
+        Adds a widget to the center side of the toolbar
+
+        Args:
+            widget:
+        """
+        pass
