@@ -25,7 +25,8 @@ class PlanzerCorePlugin(AbstractPlugin):
 
     def setupConnects(self):
         self.create_task_button.clicked.connect(self._showCreateTaskWindow)
-        self.list_tool_button.clicked.connect(lambda: self.ui.create_new_window(KTaskList()))
+        # TODO: add_widget_to_workspace нет в абстракции
+        self.list_tool_button.clicked.connect(lambda: self.ui.add_widget_to_workspace(KTaskList()))
         self.calendar_tool_button.clicked.connect(lambda: self.ui.create_new_window(KCalendar()))
 
     def _showCreateTaskWindow(self):

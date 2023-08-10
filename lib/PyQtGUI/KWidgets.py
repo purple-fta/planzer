@@ -11,9 +11,8 @@ class KCollapsibleBox(QWidget):
     """
         List of widgets that can be collapsed and expanded on click
     """
-    # TODO: параметры... на кой чёрт они нужны? Или удаляем, или задействуем
-    def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
-        super().__init__()
+    def __init__(self, title: str, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
 
         self.arrow_button = QToolButton()
         self.arrow_button.setStyleSheet("QToolButton { border: none; }")
@@ -107,9 +106,8 @@ class KTaskInList(QWidget):
     """
         A task widget to display in the Task List window.
     """
-    # TODO: ПАРАМЕТРЫ....
-    def __init__(self, task: Task, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
-        super().__init__()
+    def __init__(self, task: Task, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
 
         self.task = task
 
@@ -139,8 +137,7 @@ class KNewTaskPopupWidget(QFrame):
     """
     Popup window for creating a task. Overrides all widgets
     """
-    # TODO: Пара-пара-па....раметры
-    def __init__(self, parent: QWidget | None = None, flags: Qt.WindowType = ...) -> None:
+    def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
         self.setStyleSheet(
@@ -180,11 +177,10 @@ class KWorkspaceWindowTitleBar(QWidget):
     """
         Title bar widget for workspace windows
     """
-    # TODO: парамараметры?
     # TODO: может сделать проверку, чтобы в воркспейс
     #       можно было добавить только наследников этого класса
-    def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
-        super().__init__()
+    def __init__(self, title: str, parent: QWidget | None = None,) -> None:
+        super().__init__(parent)
 
         QHBoxLayout(self)
 
@@ -212,9 +208,8 @@ class KWorkspaceWindow(QWidget):
     """
         Workspace window template. Has a titlebar
     """
-    # TODO: параметры....
-    def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
-        super().__init__()
+    def __init__(self, title: str, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
 
         QVBoxLayout(self)
 
@@ -225,21 +220,19 @@ class KWorkspaceWindow(QWidget):
 
 
 class KCalendar(KWorkspaceWindow):
-    # TODO: параметры....
-    def __init__(self, parent: QWidget | None = ...) -> None:
-        super().__init__("Calendar")
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__("Calendar", parent)
 
         self.layout().addWidget(QCalendarWidget())
 
 
 class KTaskList(KWorkspaceWindow):
-    # TODO: параметры....
-    def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
-        super().__init__("Task List")
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__("Task List", parent)
 
-        self.high_priority_list = KCollapsibleBox("High", self)
-        self.normal_priority_list = KCollapsibleBox("normal", self)
-        self.low_priority_list = KCollapsibleBox("low", self)
+        self.high_priority_list = KCollapsibleBox("High")
+        self.normal_priority_list = KCollapsibleBox("normal")
+        self.low_priority_list = KCollapsibleBox("low")
 
         self.layout().addWidget(self.high_priority_list)
         self.layout().addWidget(self.normal_priority_list)
