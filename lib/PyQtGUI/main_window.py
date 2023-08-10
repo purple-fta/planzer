@@ -13,12 +13,13 @@ class MainWindow(InterfaceForPlugin):
         Qt window to display all elements and use all logic. It launches the program
     """
 
-    # TODO: Либо используем аргументы, либо удаляем. Нахер они тут неиспользуемые нужны?
-    def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
-        super().__init__()
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
 
         # SIDEBAR
         self.sidebar_widget = QWidget()
+        self.sidebar_widget.setMinimumWidth(350)
+        self.sidebar_widget.setMaximumWidth(350)
 
         # TOOLBAR
         self.toolbar_widget = QWidget()
@@ -96,6 +97,7 @@ class MainWindow(InterfaceForPlugin):
         """
 
         # SIDEBAR
+        # TODO: logo > __init__
         self.sidebar_widget.layout().addWidget(QLabel("PLANZER"))  # logo
         self.sidebar_widget.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
