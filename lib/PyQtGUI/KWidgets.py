@@ -1,8 +1,10 @@
-from PyQt5.QtCore import QAbstractAnimation, Qt, QParallelAnimationGroup
+from PyQt5.QtCore import QAbstractAnimation, Qt, QParallelAnimationGroup, QPropertyAnimation
 from PyQt5.QtWidgets import QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QToolButton, QCalendarWidget, \
                             QScrollArea, QFrame, QSizePolicy, QLayout, QSpacerItem, QLineEdit
 
 from lib.core.task import *
+
+# TODO: Виджеты нужно переместить в отдельные плагины и поменять структуру плагинов. Использовать не один файл, а папку
 
 
 class KCollapsibleBox(QWidget):
@@ -75,6 +77,7 @@ class KCollapsibleBox(QWidget):
         you need to update the collapse and expand animation values. This method does just that.
         """
 
+        # TODO: комментарии... ни черта не понятно как тут всё работает
         collapsed_height = self.sizeHint().height() - self.content_area.maximumHeight()
         content_height = self.content_area.layout().sizeHint().height()
         for i in range(self.toggle_animation.animationCount()):
@@ -101,6 +104,10 @@ class KCollapsibleBox(QWidget):
 
 
 class KTaskInList(QWidget):
+    """
+        A task widget to display in the Task List window.
+    """
+    # TODO: ПАРАМЕТРЫ....
     def __init__(self, task: Task, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
 
@@ -129,6 +136,10 @@ class KTaskInList(QWidget):
 
 
 class KNewTaskPopupWidget(QFrame):
+    """
+    Popup window for creating a task. Overrides all widgets
+    """
+    # TODO: Пара-пара-па....раметры
     def __init__(self, parent: QWidget | None = None, flags: Qt.WindowType = ...) -> None:
         super().__init__(parent)
 
@@ -146,14 +157,32 @@ class KNewTaskPopupWidget(QFrame):
         push_button.clicked.connect(self.push_button_clicked)
 
     def push_button_clicked(self):
+        """
+        Method called when the create button is clicked
+        """
         self.hide()  # TODO: нужно как-то освободить память. Сейчас оно его скрывает, но не удаляет
 
     def show(self, x: int, y: int) -> None:
+        """
+        Displays the widget so that the middle of the widget's
+        length is at the x, y coordinates and 30 pixels down
+
+        Args:
+            x:
+            y:
+        """
+        # TODO: нужно ли переопределять метод?
         self.move(int(x - self.geometry().width() / 2), y + 30)
         super().show()
 
 
 class KWorkspaceWindowTitleBar(QWidget):
+    """
+        Title bar widget for workspace windows
+    """
+    # TODO: парамараметры?
+    # TODO: может сделать проверку, чтобы в воркспейс
+    #       можно было добавить только наследников этого класса
     def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
 
@@ -168,10 +197,22 @@ class KWorkspaceWindowTitleBar(QWidget):
         self.layout().addWidget(self.close_button)
 
     def initCancelButton(self, parent_widget: QWidget):
+        """
+        Add signal to close button
+
+        Args:
+            parent_widget:
+        """
+        # TODO: может иначе обозвать?
+        # TODO: может придумать другой метод инициации? Может вызвать в конструкторе с self?
         self.close_button.clicked.connect(lambda: parent_widget.hide())  # TODO: нужно освободить память
 
 
 class KWorkspaceWindow(QWidget):
+    """
+        Workspace window template. Has a titlebar
+    """
+    # TODO: параметры....
     def __init__(self, title: str, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
 
@@ -184,6 +225,7 @@ class KWorkspaceWindow(QWidget):
 
 
 class KCalendar(KWorkspaceWindow):
+    # TODO: параметры....
     def __init__(self, parent: QWidget | None = ...) -> None:
         super().__init__("Calendar")
 
@@ -191,6 +233,7 @@ class KCalendar(KWorkspaceWindow):
 
 
 class KTaskList(KWorkspaceWindow):
+    # TODO: параметры....
     def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__("Task List")
 
@@ -204,7 +247,13 @@ class KTaskList(KWorkspaceWindow):
 
         self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
-    def addTask(self, task: Task):
+    def add_task(self, task: Task):
+        """
+        Adds a new task to the list widget
+
+        Args:
+            task:
+        """
         task_widget = KTaskInList(task)
 
         if task.priority == Priority.high:
