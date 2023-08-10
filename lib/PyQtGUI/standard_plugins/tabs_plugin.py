@@ -1,11 +1,11 @@
 from lib.PyQtGUI.AbstractPlugin import AbstractPlugin
-from lib.PyQtGUI.abstract_main_window import AbstractMainWindow
+from lib.PyQtGUI.Interface_for_plugin import InterfaceForPlugin
 
 from PyQt5.QtWidgets import QToolButton
 
 
 class TabsPlugin(AbstractPlugin):
-    def __init__(self, ui: AbstractMainWindow) -> None:
+    def __init__(self, ui: InterfaceForPlugin) -> None:
         super().__init__(ui)
 
         self.first_tab_button = QToolButton()

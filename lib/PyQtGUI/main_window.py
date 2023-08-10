@@ -4,11 +4,11 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import (QSplitter, QApplication)
 
 from lib.PyQtGUI.KWidgets import *
-from lib.PyQtGUI.abstract_main_window import AbstractMainWindow
+from lib.PyQtGUI.Interface_for_plugin import InterfaceForPlugin
 from lib.PyQtGUI.standard_plugins import plugins_classes
 
 
-class MainWindow(AbstractMainWindow):
+class MainWindow(InterfaceForPlugin):
     """
         Qt window to display all elements and use all logic. It launches the program
     """

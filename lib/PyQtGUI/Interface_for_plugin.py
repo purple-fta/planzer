@@ -2,11 +2,12 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget
 
 
-class AbstractMainWindow(QMainWindow):
+class InterfaceForPlugin(QMainWindow):
     """
         An interface through which plugins can interact with a window
     """
 
+    # TODO: параметры
     def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
 
