@@ -1,0 +1,1 @@
+from lib.plugins.planzer_core_plugin.planzer_core_plugin import plugin_class

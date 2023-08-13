@@ -11,6 +11,13 @@ class InterfaceForPlugin(QMainWindow):
     def __init__(self, parent: QWidget | None = ..., flags: Qt.WindowType = ...) -> None:
         super().__init__()
 
+    def add_widget_to_workspace(self, widget: QWidget):
+        """
+        Args:
+            widget: Widget for add to workspace
+        """
+        pass
+
     def add_widget_to_toolbar_left(self, widget: QWidget):
         """
         Adds a widget to the left side of the toolbar

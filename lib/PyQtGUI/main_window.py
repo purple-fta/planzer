@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QSplitter, QApplication)
 
 from lib.PyQtGUI.KWidgets import *
 from lib.PyQtGUI.Interface_for_plugin import InterfaceForPlugin
-from lib.PyQtGUI.standard_plugins import plugins_classes
+from lib.plugins import plugins_classes
 
 
 class MainWindow(InterfaceForPlugin):
@@ -32,8 +32,6 @@ class MainWindow(InterfaceForPlugin):
         self.right_toolbar_widget = QWidget()
 
         # TOOLBAR BUTTONS
-        self.first_tab_button = QToolButton()
-        self.second_tab_button = QToolButton()
         self.settings_tool_button = QToolButton()
 
         # WORKSPACE
@@ -58,8 +56,6 @@ class MainWindow(InterfaceForPlugin):
         """
             Set text in UI
         """
-        self.first_tab_button.setText("1")
-        self.second_tab_button.setText("2")
 
     def set_style(self):
         """
@@ -136,13 +132,8 @@ class MainWindow(InterfaceForPlugin):
         Args:
             widget: Widget for add to workspace
         """
+        # TODO: QWidget -> subclass.KWorkspaceWindow, имя, аргумент, комментарий
         self.workspace_widget.addWidget(widget)
-
-    def showPopupNewTask(self):
-        if self.popup_widget is None:
-            self.popup_widget = KNewTaskPopupWidget(self)
-        pos = self.create_task_button.mapTo(self, QtCore.QPoint(0, 0))
-        self.popup_widget.show(pos.x() + int(self.create_task_button.geometry().width() / 2), pos.y())
 
     def upload_plugins(self):
         for plugin in plugins_classes:
