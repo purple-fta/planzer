@@ -42,7 +42,6 @@ class PlanzerCorePlugin(AbstractPlugin):
             Set connects to widgets
         """
         self.create_task_button.clicked.connect(self._show_create_task_window)
-        # TODO: add_widget_to_workspace нет в абстракции
         self.list_tool_button.clicked.connect(lambda: self.ui.add_widget_to_workspace(TaskListWindow()))
         self.calendar_tool_button.clicked.connect(lambda: self.ui.add_widget_to_workspace(CalendarWindow()))
 

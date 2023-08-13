@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QPushButton, QWidget, QVBoxLayout, QLabel, QHBoxLayo
 
 from lib.core.task import *
 
-# TODO: Виджеты нужно переместить в отдельные плагины и поменять структуру плагинов. Использовать не один файл, а папку
-
 
 class KCollapsibleBox(QWidget):
     """
