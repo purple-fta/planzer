@@ -11,6 +11,8 @@ class KCollapsibleBox(QWidget):
     """
     def __init__(self, title: str, parent: QWidget | None = None) -> None:
         super().__init__(parent)
+        # TODO: Облагородить конструктор
+        # TODO: Добавить анимации
 
         self.arrow_button = QToolButton()
         self.arrow_button.setStyleSheet("QToolButton { border: none; }")
@@ -21,13 +23,12 @@ class KCollapsibleBox(QWidget):
         # noinspection PyUnresolvedReferences
         self.arrow_button.pressed.connect(self.on_pressed)
 
-        self.toggle_animation = QParallelAnimationGroup(self)
+        # self.toggle_animation = QParallelAnimationGroup(self)
 
-        self.content_area = QScrollArea()
+        self.content_area = QWidget()
         self.content_area.setMinimumHeight(0)
         self.content_area.setMaximumHeight(0)
         self.content_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.content_area.setFrameStyle(QFrame.Shape.NoFrame)
         QVBoxLayout(self.content_area)
 
         self.content_layout = QVBoxLayout(self)
@@ -36,21 +37,18 @@ class KCollapsibleBox(QWidget):
         self.content_layout.addWidget(self.arrow_button)
         self.content_layout.addWidget(self.content_area)
 
-        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"minimumHeight"))  # type: ignore
-        self.toggle_animation.addAnimation(QPropertyAnimation(self, b"maximumHeight"))  # type: ignore
-        self.toggle_animation.addAnimation(QPropertyAnimation(self.content_area, b"maximumHeight"))  # type: ignore
-
     def on_pressed(self):
         """
         Method to be executed if the expand button is pressed
         """
         checked = self.arrow_button.isChecked()
 
-        self.arrow_button.setArrowType(Qt.ArrowType.DownArrow if not checked else Qt.ArrowType.RightArrow)
+        self.arrow_button.setArrowType(Qt.ArrowType.DownArrow if checked else Qt.ArrowType.RightArrow)
 
-        self.toggle_animation.setDirection(QAbstractAnimation.Direction.Forward if not checked else
-                                           QAbstractAnimation.Direction.Backward)
-        self.toggle_animation.start()
+        if checked:
+            self.content_area.setMaximumHeight(16777215)
+        else:
+            self.content_area.setMaximumHeight(0)
 
     def set_content_layout(self, layout: QLayout):
         """
@@ -66,29 +64,6 @@ class KCollapsibleBox(QWidget):
         del lay
         self.content_area.setLayout(layout)
 
-        self.update_content_animation()
-
-    def update_content_animation(self):
-        """
-        When changing the height of a list with widgets (due to adding, deleting or changing),
-        you need to update the collapse and expand animation values. This method does just that.
-        """
-
-        # TODO: комментарии... ни черта не понятно как тут всё работает
-        collapsed_height = self.sizeHint().height() - self.content_area.maximumHeight()
-        content_height = self.content_area.layout().sizeHint().height()
-        for i in range(self.toggle_animation.animationCount()):
-            animation = self.toggle_animation.animationAt(i)
-            animation.setDuration(250)  # type: ignore
-            animation.setStartValue(collapsed_height)  # type: ignore
-            animation.setEndValue(collapsed_height + content_height)  # type: ignore
-
-        content_animation = self.toggle_animation.animationAt(self.toggle_animation.animationCount() - 1)
-
-        content_animation.setDuration(250)  # type: ignore
-        content_animation.setStartValue(0)  # type: ignore
-        content_animation.setEndValue(content_height)  # type: ignore
-
     def add_new_widget(self, widget: QWidget):
         """
         Adds a widget to the list, automatically updates the animation
@@ -97,7 +72,6 @@ class KCollapsibleBox(QWidget):
             widget:
         """
         self.content_area.layout().addWidget(widget)
-        self.update_content_animation()
 
 
 class KWorkspaceWindowTitleBar(QWidget):
