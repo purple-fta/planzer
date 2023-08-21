@@ -27,7 +27,6 @@ class PlanzerCorePlugin(AbstractPlugin):
         self.popup_widget_create_task = NewTaskPopupWidget(self.text_for_priority_combobox, self.ui)
         self.popup_widget_create_task.hide()
 
-
         self.setup_localization()
         self.setup_ui()
         self.setup_connects()

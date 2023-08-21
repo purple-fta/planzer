@@ -93,7 +93,7 @@ class KWorkspaceWindowTitleBar(QWidget):
         self.close_button.setText("X")
         self.layout().addWidget(self.close_button)
 
-        self.close_button.clicked.connect(lambda: self.parentWidget().hide())  # TODO: нужно освободить память
+        self.close_button.clicked.connect(lambda: self.parentWidget().setParent(None))  # TODO: нужно освободить память
 
 
 class KWorkspaceWindow(QWidget):
