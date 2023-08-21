@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QCalendarWidget, QHBoxLayout, QLabel, QVBoxLayout, \
-    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox
+    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton
 
 from lib.PyQtGUI.KWidgets import KWorkspaceWindow, KCollapsibleBox
 from lib.core import Task, Priority, Tag
@@ -30,6 +30,11 @@ class TaskInList(QWidget):
 
         self.task = task
 
+        self.create_event_button = QToolButton()
+        self.delete_button = QToolButton()
+        self.create_event_button.setText("E")
+        self.delete_button.setText("D")
+
         QHBoxLayout(self)
 
         checkbox_layout = QVBoxLayout()
@@ -39,28 +44,21 @@ class TaskInList(QWidget):
 
         checkbox_layout.addWidget(QCheckBox())
         top_layout.addWidget(QLabel(task.name))
+        top_layout.addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        top_layout.addWidget(self.create_event_button)
 
         for tag in task.tags:
             tag_widget = TagWidget(tag)
             down_layout.addWidget(tag_widget)
 
         down_layout.addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        down_layout.addWidget(self.delete_button)
 
         without_checkbox_layout.addLayout(top_layout)
         without_checkbox_layout.addLayout(down_layout)
 
         self.layout().addLayout(checkbox_layout)
         self.layout().addLayout(without_checkbox_layout)
-        # deadline_widget = QWidget()
-        # deadline_widget.setLayout(QHBoxLayout())
-        # deadline_widget.layout().addWidget(QLabel("D"))
-        # deadline_widget.layout().addWidget(QLabel(str(task.deadline)))
-        # deadline_widget.layout().addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        #
-        # self.layout().addWidget(QCheckBox())
-        # self.layout().addWidget(QLabel(task.name))
-        # self.layout().addWidget(tags_widget)
-        # self.layout().addWidget(deadline_widget)
 
 
 class TaskListWindow(KWorkspaceWindow):

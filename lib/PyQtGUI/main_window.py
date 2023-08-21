@@ -121,12 +121,6 @@ class MainWindow(InterfaceForPlugin):
         """
         pass
 
-    def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
-        if self.popup_widget is not None:
-            if not self.popup_widget.underMouse():
-                self.popup_widget.hide()
-        return super().mousePressEvent(a0)
-
     def add_widget_to_workspace(self, widget: QWidget):
         """
         Args:
