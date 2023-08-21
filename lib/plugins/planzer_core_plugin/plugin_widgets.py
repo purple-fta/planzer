@@ -30,26 +30,37 @@ class TaskInList(QWidget):
 
         self.task = task
 
-        self.setLayout(QVBoxLayout())
+        QHBoxLayout(self)
 
-        tags_widget = QWidget()
-        tags_widget.setLayout(QHBoxLayout())
+        checkbox_layout = QVBoxLayout()
+        without_checkbox_layout = QVBoxLayout()
+        top_layout = QHBoxLayout()
+        down_layout = QHBoxLayout()
+
+        checkbox_layout.addWidget(QCheckBox())
+        top_layout.addWidget(QLabel(task.name))
+
         for tag in task.tags:
             tag_widget = TagWidget(tag)
-            tags_widget.layout().addWidget(tag_widget)
+            down_layout.addWidget(tag_widget)
 
-        tags_widget.layout().addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        down_layout.addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
-        deadline_widget = QWidget()
-        deadline_widget.setLayout(QHBoxLayout())
-        deadline_widget.layout().addWidget(QLabel("D"))
-        deadline_widget.layout().addWidget(QLabel(str(task.deadline)))
-        deadline_widget.layout().addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        without_checkbox_layout.addLayout(top_layout)
+        without_checkbox_layout.addLayout(down_layout)
 
-        self.layout().addWidget(QCheckBox())
-        self.layout().addWidget(QLabel(task.name))
-        self.layout().addWidget(tags_widget)
-        self.layout().addWidget(deadline_widget)
+        self.layout().addLayout(checkbox_layout)
+        self.layout().addLayout(without_checkbox_layout)
+        # deadline_widget = QWidget()
+        # deadline_widget.setLayout(QHBoxLayout())
+        # deadline_widget.layout().addWidget(QLabel("D"))
+        # deadline_widget.layout().addWidget(QLabel(str(task.deadline)))
+        # deadline_widget.layout().addItem(QSpacerItem(10, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        #
+        # self.layout().addWidget(QCheckBox())
+        # self.layout().addWidget(QLabel(task.name))
+        # self.layout().addWidget(tags_widget)
+        # self.layout().addWidget(deadline_widget)
 
 
 class TaskListWindow(KWorkspaceWindow):
