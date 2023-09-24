@@ -19,9 +19,12 @@ class PlanzerCorePlugin(AbstractPlugin):
 
         self.create_task_button = QPushButton("+")
         self.list_tool_button  = QToolButton()
+        self.events_tool_button  = QToolButton()
         self.calendar_tool_button = QToolButton()
 
+        # TODO: SINGLETON?
         self.task_list_window = TaskListWindow()
+        self.event_window = EventsWindow()
 
         self.text_for_priority_combobox = {"High": Priority.high, "Normal": Priority.normal, "Low": Priority.low}
         self.popup_widget_create_task = NewTaskPopupWidget(self.text_for_priority_combobox, self.ui)
@@ -36,6 +39,7 @@ class PlanzerCorePlugin(AbstractPlugin):
             Set text in UI
         """
         self.calendar_tool_button.setText("C")
+        self.events_tool_button.setText("E")
         self.list_tool_button.setText("L")
 
     def setup_ui(self):
@@ -44,6 +48,7 @@ class PlanzerCorePlugin(AbstractPlugin):
         """
         self.ui.centerToolBar_addWidget(self.create_task_button)
         self.ui.rightToolBar_addWidget(self.list_tool_button)
+        self.ui.rightToolBar_addWidget(self.events_tool_button)
         self.ui.rightToolBar_addWidget(self.calendar_tool_button)
 
     def setup_connects(self):
@@ -52,6 +57,7 @@ class PlanzerCorePlugin(AbstractPlugin):
         """
         self.create_task_button.clicked.connect(self._show_create_task_window)
         self.list_tool_button.clicked.connect(lambda: self.ui.add_widget_to_workspace(self.task_list_window))
+        self.events_tool_button.clicked.connect(lambda: self.ui.add_widget_to_workspace(self.event_window))
         self.calendar_tool_button.clicked.connect(lambda: self.ui.add_widget_to_workspace(CalendarWindow()))
 
         self.popup_widget_create_task.create_push_button.clicked.connect(lambda: self._create_task())

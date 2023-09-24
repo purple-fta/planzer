@@ -1,9 +1,17 @@
-from PyQt5.QtGui import QColor
+import datetime
+
+from PyQt5 import QtCore
+from PyQt5.QtGui import QColor, QPainter, QPainterPath, QBrush
 from PyQt5.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QCalendarWidget, QHBoxLayout, QLabel, QVBoxLayout, \
-    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton
+    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit
 
 from lib.PyQtGUI.KWidgets import KWorkspaceWindow, KCollapsibleBox
-from lib.core import Task, Priority, Tag
+from lib.core import Task, Priority, Tag, Timeline, Event, StartEnd, EventOptions
+
+from PyQt5.QtWidgets import (QWidget, QSlider, QApplication,
+                             QHBoxLayout, QVBoxLayout)
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, QLine
+from PyQt5.QtGui import QPainter, QFont, QColor, QPen
 
 
 class CalendarWindow(KWorkspaceWindow):
@@ -25,6 +33,7 @@ class TaskInList(QWidget):
     """
         A task widget to display in the Task List window.
     """
+
     def __init__(self, task: Task, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
@@ -34,6 +43,8 @@ class TaskInList(QWidget):
         self.delete_button = QToolButton()
         self.create_event_button.setText("E")
         self.delete_button.setText("D")
+
+        self.create_event_window = CreateEventPopupWidget()
 
         QHBoxLayout(self)
 
@@ -59,6 +70,17 @@ class TaskInList(QWidget):
 
         self.layout().addLayout(checkbox_layout)
         self.layout().addLayout(without_checkbox_layout)
+
+        self.create_event_button.clicked.connect(self._show_create_event_window)
+        self.create_event_window.create_button.clicked.connect(self._create_event)
+
+    def _create_event(self):
+        task = self.task
+        start = self.create_event_window.start_time.dateTime().toPyDateTime()
+
+
+    def _show_create_event_window(self):
+        self.layout().addWidget(self.create_event_window)
 
 
 class TaskListWindow(KWorkspaceWindow):
@@ -109,7 +131,7 @@ class TagInputWidget(QWidget):
 
     def add_tag(self):
         new_tag = Tag(self.input.text(), QColor(189, 147, 249))
-        self.layout.insertWidget(self.layout.count()-1, TagWidget(new_tag))
+        self.layout.insertWidget(self.layout.count() - 1, TagWidget(new_tag))
         self.input.setText("")
         self.tags.append(new_tag)
 
@@ -118,6 +140,7 @@ class NewTaskPopupWidget(QFrame):
     """
     Popup window for creating a task. Overrides all widgets
     """
+
     def __init__(self, text_for_priority_combobox: dict[str, Priority], parent: QWidget | None = None) -> None:
         super().__init__(parent)
         # TODO: выделить всё кроме инициализации полей в отдельные методы
@@ -169,3 +192,124 @@ class NewTaskPopupWidget(QFrame):
         # TODO: нужно ли переопределять метод?
         self.move(int(x - self.geometry().width() / 2), y + 30)
         super().show()
+
+
+class TimelineWidget(QWidget):
+    def __init__(self, timeline: Timeline):
+        super().__init__()
+
+        self.timeline = timeline
+
+        self.setMinimumSize(130, 90)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+    def paintEvent(self, e):
+        qp = QPainter()
+        qp.begin(self)
+        self.draw_widget(qp)
+        qp.end()
+
+    def draw_widget(self, painter):
+        width = self.width()
+        height = self.height()
+
+        font = QFont('Serif', 12, QFont.Normal)
+        painter.setFont(font)
+        font_metrics = painter.fontMetrics()
+
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setBrush(QColor(248, 248, 242))
+
+        # BORDER
+        painter.drawRoundedRect(0, 0, width, height, 13, 13)
+        painter.setBrush(QColor(40, 42, 54))
+        painter.drawRoundedRect(2, 2, width - 4, height - 4, 11, 11)
+
+        hour_height_scale = int(height / 24)
+        minute_height_scale = hour_height_scale / 60
+
+        # SCALE
+        for i in range(1, 24):
+            painter.drawLine(QLine(0, i * hour_height_scale, width, i * hour_height_scale))
+
+        # TEXT
+        # for i in range(1, 24):
+        #    font_width = font_metrics.width(f"{i:0{2}}:00")
+        #    painter.drawText(int(width/2-font_width/2), i * hour_height_scale-4, f"{i:0{2}}:00")
+
+        # EVENTS
+        for event in self.timeline.events:
+            start = event.event_start_time.time().hour * hour_height_scale \
+                    + int(event.event_start_time.time().minute * minute_height_scale)
+            end = event.event_end_time.time().hour * hour_height_scale \
+                + int(event.event_end_time.time().minute * minute_height_scale)
+            painter.setBrush(event.task.decor)
+            painter.drawRect(2, start, width-4, end)
+
+            # TODO: Нужно как-то выделить те что с высоким приоритетом
+            if event.task.priority == Priority.high:
+                pass
+
+# TODO: Он уже не POPUP
+class CreateEventPopupWidget(QFrame):
+    def __init__(self, parent: QWidget | None = None):
+        super().__init__(parent)
+
+        # TODO: Добавим _widget для ясности
+        self.start_time = QDateTimeEdit()
+        self.duration_time = QTimeEdit()
+        self.end_time = QDateTimeEdit()
+        self.create_button = QPushButton("CREATE")
+
+        self.event_options = EventOptions(StartEnd(self.start_time.dateTime().toPyDateTime(),
+                                                   self.end_time.dateTime().toPyDateTime()))
+
+        self.setStyleSheet(
+            "QFrame {background: rgba(68, 71, 90, 1); border-radius: 10px;}")  # Установите желаемый стиль виджета
+
+        QHBoxLayout(self)
+
+        self.layout().addWidget(self.start_time)
+        self.layout().addWidget(self.duration_time)
+        self.layout().addWidget(self.end_time)
+        self.layout().addWidget(self.create_button)
+
+        self.create_button.clicked.connect(self.push_button_clicked)
+
+
+    def push_button_clicked(self):
+        self.setParent(None)  # TODO: memory?
+
+
+class EventsWindow(KWorkspaceWindow):
+    def __init__(self, parent: QWidget | None = None):
+        super().__init__("Events", parent)
+
+        self.widget = None
+
+        self.top_bar_layout = QHBoxLayout()
+        self.timelines_layout = QHBoxLayout()
+
+        for i in range(5):
+            self.top_bar_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
+            self.top_bar_layout.addWidget(QPushButton(f"0{i}.10"))
+            self.top_bar_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
+
+        for i in range(5):
+            self.timelines_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
+            self.timelines_layout.addWidget(TimelineWidget(Timeline({Event(
+                Task("Task",
+                     Priority.high,
+                     [],
+                     QColor(255, 121, 198),
+                     datetime.datetime(2025, 5,
+                                       5, 5)),
+                StartEnd(
+                    datetime.datetime(2023, 10, 5, 5),
+                    datetime.datetime(2023, 10, 5, 12)))},
+                datetime.time(),
+                datetime.time(23))))
+            self.timelines_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
+
+        self.layout().addLayout(self.top_bar_layout)
+        self.layout().addLayout(self.timelines_layout)
