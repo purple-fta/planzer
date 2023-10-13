@@ -4,7 +4,7 @@ from enum import Enum
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QPainter, QPainterPath, QBrush
 from PyQt5.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QCalendarWidget, QHBoxLayout, QLabel, QVBoxLayout, \
-    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit, QDateEdit
+    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit, QDateEdit, QRadioButton
 
 from lib.PyQtGUI.KWidgets import KWorkspaceWindow, KCollapsibleBox
 from lib.core import Task, Priority, Tag, Timeline, Event, StartEnd, EventOptions
@@ -257,16 +257,24 @@ class TimelineWidget(QWidget):
             if event.task.priority == Priority.high:
                 pass
 
+
 # TODO: Он уже не POPUP
 class CreateEventPopupWidget(QFrame):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
 
-        # TODO: Добавим _widget для ясности
+        # TODO: Добавим _widget или _button для ясности
         self.date_edit = QDateEdit()
+
         self.start_time = QTimeEdit()
         self.duration_time = QTimeEdit()
         self.end_time = QTimeEdit()
+
+        self.start_recalculated_radiobutton = QRadioButton()
+        self.duration_recalculated_radiobutton = QRadioButton()
+        self.end_recalculated_radiobutton = QRadioButton()
+        self.end_recalculated_radiobutton.toggle()
+
         self.create_button = QPushButton("CREATE")
 
         self.event_options = EventOptions(StartEnd(self.start_time.dateTime().toPyDateTime(),
@@ -283,8 +291,11 @@ class CreateEventPopupWidget(QFrame):
 
         self.layout().addWidget(self.date_edit)
         self.layout().addWidget(self.start_time)
+        self.layout().addWidget(self.start_recalculated_radiobutton)
         self.layout().addWidget(self.duration_time)
+        self.layout().addWidget(self.duration_recalculated_radiobutton)
         self.layout().addWidget(self.end_time)
+        self.layout().addWidget(self.end_recalculated_radiobutton)
         self.layout().addWidget(self.create_button)
 
         self.create_button.clicked.connect(self.push_button_clicked)
@@ -292,6 +303,10 @@ class CreateEventPopupWidget(QFrame):
         self.start_time.dateTimeChanged.connect(self._start_time_changed)
         self.duration_time.dateTimeChanged.connect(self._duration_time_changed)
         self.end_time.dateTimeChanged.connect(self._end_time_changed)
+
+        self.start_recalculated_radiobutton.toggled.connect(lambda: self._set_recalculated_time(RecalculatedTime.start))
+        self.duration_recalculated_radiobutton.toggled.connect(lambda: self._set_recalculated_time(RecalculatedTime.duration))
+        self.end_recalculated_radiobutton.toggled.connect(lambda: self._set_recalculated_time(RecalculatedTime.end))
 
     def _is_recalculated(self, recalculated_time: RecalculatedTime, value_else_recalculated):
         return None if self.recalculated_time == recalculated_time else value_else_recalculated
@@ -375,9 +390,13 @@ class CreateEventPopupWidget(QFrame):
         duration = self._is_recalculated(RecalculatedTime.duration, self.duration_time.dateTime().toPyDateTime())
         end = new_date
 
-        # start, end = self._set_date(date, start)
+        start = None if start is None else self._set_date(date, start)
+        end = None if end is None else self._set_date(date, end)
+        duration = self._duration_to_timedelta(duration) if duration is not None else None
 
-        print(start, duration, end)
+        self.event_options.set_options(start, duration, end)
+
+        self._update_time_edits()
 
     def push_button_clicked(self):
         self.setParent(None)  # TODO: memory?
