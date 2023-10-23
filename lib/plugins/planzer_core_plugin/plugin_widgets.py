@@ -1,17 +1,25 @@
 import datetime
+from enum import Enum
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QPainter, QPainterPath, QBrush
 from PyQt5.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QCalendarWidget, QHBoxLayout, QLabel, QVBoxLayout, \
-    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit
+    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit, QDateEdit, QRadioButton
 
+import lib.plugins.planzer_core_plugin.planzer_core_plugin
 from lib.PyQtGUI.KWidgets import KWorkspaceWindow, KCollapsibleBox
-from lib.core import Task, Priority, Tag, Timeline, Event, StartEnd, EventOptions
+from lib.core import Task, Priority, Tag, Timeline, Event, StartEnd, EventOptions, PlanzerCore
 
 from PyQt5.QtWidgets import (QWidget, QSlider, QApplication,
                              QHBoxLayout, QVBoxLayout)
-from PyQt5.QtCore import QObject, Qt, pyqtSignal, QLine
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, QLine, QDateTime, QTime
 from PyQt5.QtGui import QPainter, QFont, QColor, QPen
+
+
+class RecalculatedTime(Enum):
+    start = 0
+    duration = 1
+    end = 2
 
 
 class CalendarWindow(KWorkspaceWindow):
@@ -37,6 +45,8 @@ class TaskInList(QWidget):
     def __init__(self, task: Task, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
+        # noinspection PyTypeChecker
+        self.core: PlanzerCore = None
         self.task = task
 
         self.create_event_button = QToolButton()
@@ -76,16 +86,26 @@ class TaskInList(QWidget):
 
     def _create_event(self):
         task = self.task
-        start = self.create_event_window.start_time.dateTime().toPyDateTime()
+        options = self.create_event_window.event_options
+        options = StartEnd(options.event_start_time, options.event_end_time)
 
+        self.core.task_to_event(task, options)
+
+        print(self.core.get_timeline(options.event_start_time.date()))
 
     def _show_create_event_window(self):
         self.layout().addWidget(self.create_event_window)
+
+    def connect_core(self, core: PlanzerCore):
+        self.core = core
 
 
 class TaskListWindow(KWorkspaceWindow):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__("Task List", parent)
+
+        # noinspection PyTypeChecker
+        self.core: PlanzerCore = None
 
         self.high_priority_list = KCollapsibleBox("High")
         self.normal_priority_list = KCollapsibleBox("normal")
@@ -97,6 +117,9 @@ class TaskListWindow(KWorkspaceWindow):
 
         self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
+    def connect_core(self, core: PlanzerCore):
+        self.core = core
+
     def add_task(self, task: Task):
         """
         Adds a new task to the list widget
@@ -105,6 +128,8 @@ class TaskListWindow(KWorkspaceWindow):
             task:
         """
         task_widget = TaskInList(task)
+
+        task_widget.connect_core(self.core)
 
         if task.priority == Priority.high:
             self.high_priority_list.add_new_widget(task_widget)
@@ -250,34 +275,149 @@ class TimelineWidget(QWidget):
             if event.task.priority == Priority.high:
                 pass
 
+
 # TODO: Он уже не POPUP
 class CreateEventPopupWidget(QFrame):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
 
-        # TODO: Добавим _widget для ясности
-        self.start_time = QDateTimeEdit()
+        # TODO: Добавим _widget или _button для ясности
+        self.date_edit = QDateEdit()
+
+        self.start_time = QTimeEdit()
         self.duration_time = QTimeEdit()
-        self.end_time = QDateTimeEdit()
+        self.end_time = QTimeEdit()
+
+        self.start_recalculated_radiobutton = QRadioButton()
+        self.duration_recalculated_radiobutton = QRadioButton()
+        self.end_recalculated_radiobutton = QRadioButton()
+        self.end_recalculated_radiobutton.toggle()
+
         self.create_button = QPushButton("CREATE")
 
         self.event_options = EventOptions(StartEnd(self.start_time.dateTime().toPyDateTime(),
                                                    self.end_time.dateTime().toPyDateTime()))
+
+        self.recalculated_time = None  # TODO: Нужно указать что оно не блокируется полностью
+        # пользователь может изменять, но просчитываться после изменения остальных оно не будет
+        self._set_recalculated_time(RecalculatedTime.end)
 
         self.setStyleSheet(
             "QFrame {background: rgba(68, 71, 90, 1); border-radius: 10px;}")  # Установите желаемый стиль виджета
 
         QHBoxLayout(self)
 
+        self.layout().addWidget(self.date_edit)
         self.layout().addWidget(self.start_time)
+        self.layout().addWidget(self.start_recalculated_radiobutton)
         self.layout().addWidget(self.duration_time)
+        self.layout().addWidget(self.duration_recalculated_radiobutton)
         self.layout().addWidget(self.end_time)
+        self.layout().addWidget(self.end_recalculated_radiobutton)
         self.layout().addWidget(self.create_button)
 
         self.create_button.clicked.connect(self.push_button_clicked)
 
+        self.start_time.dateTimeChanged.connect(self._start_time_changed)
+        self.duration_time.dateTimeChanged.connect(self._duration_time_changed)
+        self.end_time.dateTimeChanged.connect(self._end_time_changed)
+
+        self.start_recalculated_radiobutton.toggled.connect(lambda: self._set_recalculated_time(RecalculatedTime.start))
+        self.duration_recalculated_radiobutton.toggled.connect(lambda: self._set_recalculated_time(RecalculatedTime.duration))
+        self.end_recalculated_radiobutton.toggled.connect(lambda: self._set_recalculated_time(RecalculatedTime.end))
+
+    def _is_recalculated(self, recalculated_time: RecalculatedTime, value_else_recalculated):
+        return None if self.recalculated_time == recalculated_time else value_else_recalculated
+
+    def _set_date(self, added_date: datetime.datetime, time):
+        time = datetime.datetime(added_date.year, added_date.month, added_date.day, time.hour, time.minute)
+
+        return time
+
+    @staticmethod
+    def _duration_to_timedelta(duration: datetime.datetime) -> datetime.timedelta:
+        return datetime.timedelta(hours=duration.hour, minutes=duration.minute)
+
+    def _set_recalculated_time(self, new_recalculated_time: RecalculatedTime):
+        # TODO: давай через словарь
+        self.start_time.setEnabled(True)
+        self.duration_time.setEnabled(True)
+        self.end_time.setEnabled(True)
+
+        if new_recalculated_time == RecalculatedTime.start:
+            self.start_time.setDisabled(True)
+        elif new_recalculated_time == RecalculatedTime.duration:
+            self.duration_time.setDisabled(True)
+        elif new_recalculated_time == RecalculatedTime.end:
+            self.end_time.setDisabled(True)
+
+        self.recalculated_time = new_recalculated_time
+
+    def _timedelta_to_time(self, td: datetime.timedelta) -> datetime.time:
+        hour = td.seconds // 3600
+        minute = (td.seconds % 3600) // 60
+
+        return datetime.time(hour, minute)
+
+    def _update_time_edits(self):
+        self.start_time.setDateTime(self.event_options.event_start_time)
+        duration = self._timedelta_to_time(self.event_options.event_duration_time)
+        self.duration_time.setTime(duration)
+        self.end_time.setDateTime(self.event_options.event_end_time)
+
+    def _start_time_changed(self, new_date: QDateTime):
+        new_date = new_date.toPyDateTime()
+
+        date = self.date_edit.date().toPyDate()
+
+        start = new_date
+        duration = self._is_recalculated(RecalculatedTime.duration, self.duration_time.dateTime().toPyDateTime())
+        end = self._is_recalculated(RecalculatedTime.end, self.end_time.dateTime().toPyDateTime())
+
+        start = None if start is None else self._set_date(date, start)
+        end = None if end is None else self._set_date(date, end)
+        duration = self._duration_to_timedelta(duration) if duration is not None else None
+
+        self.event_options.set_options(start, duration, end)
+
+        self._update_time_edits()
+
+    def _duration_time_changed(self, new_date: QDateTime):
+        new_date = new_date.toPyDateTime()
+
+        date = self.date_edit.date().toPyDate()
+
+        start = self._is_recalculated(RecalculatedTime.start, self.start_time.dateTime().toPyDateTime())
+        duration = new_date
+        end = self._is_recalculated(RecalculatedTime.end, self.end_time.dateTime().toPyDateTime())
+
+        start = None if start is None else self._set_date(date, start)
+        end = None if end is None else self._set_date(date, end)
+        duration = self._duration_to_timedelta(duration)
+
+        self.event_options.set_options(start, duration, end)
+
+        self._update_time_edits()
+
+    def _end_time_changed(self, new_date: QDateTime):
+        new_date = new_date.toPyDateTime()
+
+        date = self.date_edit.date().toPyDate()
+
+        start = self._is_recalculated(RecalculatedTime.start, self.start_time.dateTime().toPyDateTime())
+        duration = self._is_recalculated(RecalculatedTime.duration, self.duration_time.dateTime().toPyDateTime())
+        end = new_date
+
+        start = None if start is None else self._set_date(date, start)
+        end = None if end is None else self._set_date(date, end)
+        duration = self._duration_to_timedelta(duration) if duration is not None else None
+
+        self.event_options.set_options(start, duration, end)
+
+        self._update_time_edits()
 
     def push_button_clicked(self):
+
         self.setParent(None)  # TODO: memory?
 
 
