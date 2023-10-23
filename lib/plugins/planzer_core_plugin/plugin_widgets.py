@@ -6,8 +6,9 @@ from PyQt5.QtGui import QColor, QPainter, QPainterPath, QBrush
 from PyQt5.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QCalendarWidget, QHBoxLayout, QLabel, QVBoxLayout, \
     QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit, QDateEdit, QRadioButton
 
+import lib.plugins.planzer_core_plugin.planzer_core_plugin
 from lib.PyQtGUI.KWidgets import KWorkspaceWindow, KCollapsibleBox
-from lib.core import Task, Priority, Tag, Timeline, Event, StartEnd, EventOptions
+from lib.core import Task, Priority, Tag, Timeline, Event, StartEnd, EventOptions, PlanzerCore
 
 from PyQt5.QtWidgets import (QWidget, QSlider, QApplication,
                              QHBoxLayout, QVBoxLayout)
@@ -44,6 +45,8 @@ class TaskInList(QWidget):
     def __init__(self, task: Task, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
+        # noinspection PyTypeChecker
+        self.core: PlanzerCore = None
         self.task = task
 
         self.create_event_button = QToolButton()
@@ -84,15 +87,25 @@ class TaskInList(QWidget):
     def _create_event(self):
         task = self.task
         options = self.create_event_window.event_options
-        event = Event(task, StartEnd(options.event_start_time, options.event_end_time))
+        options = StartEnd(options.event_start_time, options.event_end_time)
+
+        self.core.task_to_event(task, options)
+
+        print(self.core.get_timeline(options.event_start_time.date()))
 
     def _show_create_event_window(self):
         self.layout().addWidget(self.create_event_window)
+
+    def connect_core(self, core: PlanzerCore):
+        self.core = core
 
 
 class TaskListWindow(KWorkspaceWindow):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__("Task List", parent)
+
+        # noinspection PyTypeChecker
+        self.core: PlanzerCore = None
 
         self.high_priority_list = KCollapsibleBox("High")
         self.normal_priority_list = KCollapsibleBox("normal")
@@ -104,6 +117,9 @@ class TaskListWindow(KWorkspaceWindow):
 
         self.layout().addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
+    def connect_core(self, core: PlanzerCore):
+        self.core = core
+
     def add_task(self, task: Task):
         """
         Adds a new task to the list widget
@@ -112,6 +128,8 @@ class TaskListWindow(KWorkspaceWindow):
             task:
         """
         task_widget = TaskInList(task)
+
+        task_widget.connect_core(self.core)
 
         if task.priority == Priority.high:
             self.high_priority_list.add_new_widget(task_widget)
@@ -399,6 +417,7 @@ class CreateEventPopupWidget(QFrame):
         self._update_time_edits()
 
     def push_button_clicked(self):
+
         self.setParent(None)  # TODO: memory?
 
 

@@ -8,6 +8,9 @@ from lib.core import Tag, PlanzerCore
 from lib.plugins.planzer_core_plugin.plugin_widgets import *
 
 
+core = PlanzerCore()
+
+
 class PlanzerCorePlugin(AbstractPlugin):
     """
         The main plugin for creating tasks, scheduling, etc.
@@ -15,7 +18,7 @@ class PlanzerCorePlugin(AbstractPlugin):
     def __init__(self, ui) -> None:
         super().__init__(ui)
 
-        self.core = PlanzerCore()
+        self.core = core
 
         self.create_task_button = QPushButton("+")
         self.list_tool_button  = QToolButton()
@@ -25,6 +28,8 @@ class PlanzerCorePlugin(AbstractPlugin):
         # TODO: SINGLETON?
         self.task_list_window = TaskListWindow()
         self.event_window = EventsWindow()
+
+        self.task_list_window.connect_core(core)
 
         self.text_for_priority_combobox = {"High": Priority.high, "Normal": Priority.normal, "Low": Priority.low}
         self.popup_widget_create_task = NewTaskPopupWidget(self.text_for_priority_combobox, self.ui)
