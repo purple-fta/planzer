@@ -30,6 +30,11 @@ class PlanzerCorePlugin(AbstractPlugin):
         self.event_window = EventsWindow()
 
         self.task_list_window.connect_core(core)
+        self.event_window.connect_core(core)
+
+        self.event_window.update_timelines()
+
+        self.core.create_event_signal.append(self.event_window.update_timelines)
 
         self.text_for_priority_combobox = {"High": Priority.high, "Normal": Priority.normal, "Low": Priority.low}
         self.popup_widget_create_task = NewTaskPopupWidget(self.text_for_priority_combobox, self.ui)
@@ -71,7 +76,7 @@ class PlanzerCorePlugin(AbstractPlugin):
         name = self.popup_widget_create_task.name_input.text()
         priority = self.text_for_priority_combobox[self.popup_widget_create_task.priority_combobox.currentText()]
         tags = self.popup_widget_create_task.add_tags_widget.tags
-        task = Task(name, priority, tags, None, datetime.datetime.now())
+        task = Task(name, priority, tags, QtGui.QColor(189, 147, 249), datetime.datetime.now())  # TODO: deadline
 
         self.core.add_task(task)
         self.task_list_window.add_task(task)

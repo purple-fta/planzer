@@ -35,10 +35,12 @@ class PlanzerCore:
     Main core class. It contains the 
     implementation of all logical components
     """
-    
+
     def __init__(self) -> None:
         self.tasks: List[Task] = []
         self.events: List[Event] = []
+
+        self.create_event_signal = []
 
     def get_task_list(self, filter: TaskListDisplayOptions) -> tuple[Task, ...]:
         """
@@ -147,4 +149,10 @@ class PlanzerCore:
 
         self.events.append(event)
 
+        self._push_signals(self.create_event_signal)
+
         return event
+
+    def _push_signals(self, source: list):
+        for s in source:
+            s()
