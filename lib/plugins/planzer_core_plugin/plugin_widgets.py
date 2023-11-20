@@ -4,7 +4,8 @@ from enum import Enum
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor, QPainter, QPainterPath, QBrush
 from PyQt5.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QCalendarWidget, QHBoxLayout, QLabel, QVBoxLayout, \
-    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit, QDateEdit, QRadioButton
+    QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit, QDateEdit, \
+    QRadioButton, QWidgetItem
 
 import lib.plugins.planzer_core_plugin.planzer_core_plugin
 from lib.PyQtGUI.KWidgets import KWorkspaceWindow, KCollapsibleBox
@@ -88,6 +89,8 @@ class TaskInList(QWidget):
         task = self.task
         options = self.create_event_window.event_options
         options = StartEnd(options.event_start_time, options.event_end_time)
+
+        print()
 
         self.core.task_to_event(task, options)
 
@@ -220,13 +223,18 @@ class NewTaskPopupWidget(QFrame):
 
 
 class TimelineWidget(QWidget):
-    def __init__(self, timeline: Timeline):
+    def __init__(self, timeline: Timeline, full_information_flag=False):
         super().__init__()
 
         self.timeline = timeline
+        self.full_information_flag = full_information_flag
 
         self.setMinimumSize(130, 90)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+    def set_timeline(self, timeline: Timeline):
+        self.timeline = timeline
+        self.repaint()
 
     def paintEvent(self, e):
         qp = QPainter()
@@ -282,7 +290,7 @@ class CreateEventPopupWidget(QFrame):
         super().__init__(parent)
 
         # TODO: Добавим _widget или _button для ясности
-        self.date_edit = QDateEdit()
+        self.date_edit = QDateEdit(datetime.date.today())
 
         self.start_time = QTimeEdit()
         self.duration_time = QTimeEdit()
@@ -425,31 +433,59 @@ class EventsWindow(KWorkspaceWindow):
     def __init__(self, parent: QWidget | None = None):
         super().__init__("Events", parent)
 
+        # noinspection PyTypeChecker
+        self.core: PlanzerCore = None
         self.widget = None
 
         self.top_bar_layout = QHBoxLayout()
         self.timelines_layout = QHBoxLayout()
 
-        for i in range(5):
+        self.top_bar_widget = QWidget()
+        self.timelines_widget = QWidget()
+
+        self.top_bar_widget.setLayout(self.top_bar_layout)
+        self.timelines_widget.setLayout(self.timelines_layout)
+
+        self.layout().addWidget(self.top_bar_widget)
+        self.layout().addWidget(self.timelines_widget)
+
+    def init_timelines(self):
+        today = datetime.date.today()
+        for i in range(7):
+            # top bar with PushButtons
             self.top_bar_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
-            self.top_bar_layout.addWidget(QPushButton(f"0{i}.10"))
+            self.top_bar_layout.addWidget(QPushButton("00.00"))
             self.top_bar_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
 
-        for i in range(5):
+            # Timelines
             self.timelines_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
-            self.timelines_layout.addWidget(TimelineWidget(Timeline({Event(
-                Task("Task",
-                     Priority.high,
-                     [],
-                     QColor(255, 121, 198),
-                     datetime.datetime(2025, 5,
-                                       5, 5)),
-                StartEnd(
-                    datetime.datetime(2023, 10, 5, 5),
-                    datetime.datetime(2023, 10, 5, 12)))},
-                datetime.time(),
-                datetime.time(23))))
+            self.timelines_layout.addWidget(TimelineWidget(self.core.get_timeline(today)))
             self.timelines_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
 
-        self.layout().addLayout(self.top_bar_layout)
-        self.layout().addLayout(self.timelines_layout)
+    def update_timelines(self):
+        today = datetime.date.today()
+        day_timedelta = datetime.timedelta(1)
+        timeline_day = datetime.date(today.year, today.month, today.day-4)
+
+        # noinspection PyTypeChecker
+        top_bar_buttons: list[QPushButton] = self.top_bar_widget.findChildren(QPushButton)
+        # noinspection PyTypeChecker
+        timelines_widgets: list[TimelineWidget] = self.timelines_widget.findChildren(TimelineWidget)
+
+        for i in range(7):
+            timeline_day += day_timedelta
+
+            # Top bar with PushButtons
+            top_bar_buttons[i].setText(f"{timeline_day.day}.{timeline_day.month}")
+
+            # Timelines
+            # print(self.timelines_layout.itemAt(1+i*3).widget())
+            timelines_widgets[i].set_timeline(self.core.get_timeline(timeline_day))
+            # self.timelines_layout.itemAt(1+i*3+i).widget().deleteLater()
+            # self.timelines_layout.insertWidget(1+i*3, TimelineWidget(self.core.get_timeline(timeline_day)))
+            # self.timelines_layout.addWidget(TimelineWidget(self.core.get_timeline(timeline_day)))
+
+    def connect_core(self, core: PlanzerCore):
+        self.core = core
+
+        self.init_timelines()
