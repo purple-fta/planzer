@@ -2,7 +2,7 @@ import datetime
 from enum import Enum
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QColor, QPainter, QPainterPath, QBrush
+from PyQt5.QtGui import QColor, QPainter, QPainterPath, QBrush, QDrag, QPixmap
 from PyQt5.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QCalendarWidget, QHBoxLayout, QLabel, QVBoxLayout, \
     QFrame, QLineEdit, QPushButton, QCheckBox, QComboBox, QToolButton, QDateTimeEdit, QTimeEdit, QDateEdit, \
     QRadioButton, QWidgetItem
@@ -13,7 +13,7 @@ from lib.core import Task, Priority, Tag, Timeline, Event, StartEnd, EventOption
 
 from PyQt5.QtWidgets import (QWidget, QSlider, QApplication,
                              QHBoxLayout, QVBoxLayout)
-from PyQt5.QtCore import QObject, Qt, pyqtSignal, QLine, QDateTime, QTime
+from PyQt5.QtCore import QObject, Qt, pyqtSignal, QLine, QDateTime, QTime, QMimeData
 from PyQt5.QtGui import QPainter, QFont, QColor, QPen
 
 
@@ -84,6 +84,18 @@ class TaskInList(QWidget):
 
         self.create_event_button.clicked.connect(self._show_create_event_window)
         self.create_event_window.create_button.clicked.connect(self._create_event)
+
+    def mouseMoveEvent(self, e) -> None:
+        if e.buttons() == Qt.LeftButton:
+            drag = QDrag(self)
+            mime = QMimeData()
+            drag.setMimeData(mime)
+
+            pixmap = QPixmap(self.size())
+            self.render(pixmap)
+            drag.setPixmap(pixmap)
+
+            drag.exec_(Qt.MoveAction)
 
     def _create_event(self):
         task = self.task

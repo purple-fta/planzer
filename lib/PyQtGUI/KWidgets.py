@@ -31,6 +31,10 @@ class KCollapsibleBox(QWidget):
         self.content_area.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         QVBoxLayout(self.content_area)
 
+        self.content_area.setAcceptDrops(True)
+        self.content_area.dragEnterEvent = self._dragEnterEvent
+        self.content_area.dropEvent = self._dropEvent
+
         self.content_layout = QVBoxLayout(self)
         self.content_layout.setSpacing(0)
         self.content_layout.setContentsMargins(0, 0, 0, 0)
@@ -72,6 +76,19 @@ class KCollapsibleBox(QWidget):
             widget:
         """
         self.content_area.layout().addWidget(widget)
+
+    def _dragEnterEvent(self, e) -> None:
+        e.accept()
+
+    def _dropEvent(self, e):
+        pos = e.pos()
+        widget = e.source()
+
+        for n in range(self.content_area.layout().count()):
+            w = self.content_area.layout().itemAt(n).widget()
+            if pos.y() < w.y() + w.size().height() // 2:
+                self.content_area.layout().insertWidget(n, widget)
+                break
 
 
 class KWorkspaceWindowTitleBar(QWidget):
