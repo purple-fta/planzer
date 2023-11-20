@@ -223,10 +223,11 @@ class NewTaskPopupWidget(QFrame):
 
 
 class TimelineWidget(QWidget):
-    def __init__(self, timeline: Timeline):
+    def __init__(self, timeline: Timeline, full_information_flag=False):
         super().__init__()
 
         self.timeline = timeline
+        self.full_information_flag = full_information_flag
 
         self.setMinimumSize(130, 90)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
